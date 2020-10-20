@@ -53,27 +53,22 @@
       <!-- Heading -->
 
       <!-- Nav Item - Pages Collapse Menu -->
-       <li class="nav-item {% block acc %}{% endblock %}">
-        <a class="nav-link" href="index.html">
-          <i class="fas fa-fw fa-credit-card"></i>
-          <span>Wards</span></a>
-      </li>
-         <li class="nav-item {% block hr %}{% endblock %}">
-        <a class="nav-link" href="index.html">
-          <i class="fas fa-fw fa-handshake"></i>
-          <span>OPD</span></a>
-      </li>
-         <li class="nav-item {% block staff %}{% endblock %}">
-        <a class="nav-link" href="{% url 'management:staff' %}">
-          <i class="fas fa-fw fa-user"></i>
-          <span>Patients</span></a>
-      </li>
-         <li class="nav-item {% block mgt %}{% endblock %}">
-        <a class="nav-link" href="index.html">
-          <i class="fas fa-fw fa-cogs"></i>
-          <span>Management</span></a>
-      </li>
-      </li>
+        <li class="nav-item {% block ward %}{% endblock %}">
+            <a class="nav-link" href="index.html">
+                <i class="fas fa-fw fa-balance-scale"></i>
+                <span>Wards</span></a>
+        </li>
+        <li class="nav-item {% block opd %}{% endblock %}">
+            <a class="nav-link" href="index.html">
+                <i class="fas fa-fw fa-snowflake"></i>
+                <span>OPD</span></a>
+        </li>
+        <li class="nav-item {% block pat %}{% endblock %}">
+            <a class="nav-link" href="{% url 'department:patients' %}">
+                <i class="fas fa-fw fa-user-secret"></i>
+                <span>Patients</span></a>
+        </li>
+        </li>
 
       <!-- Divider -->
       <hr class="sidebar-divider">
@@ -109,7 +104,7 @@
           </button>
 
           <!-- Topbar Search -->
-            <a href="{% url 'apps' %}" class="btn btn-sm btn-primary">APPS</a>
+            <a href="{% url 'apps' %}" class="btn btn-sm btn-warning">APPS</a>
 
           <!-- Topbar Navbar -->
           <ul class="navbar-nav ml-auto">

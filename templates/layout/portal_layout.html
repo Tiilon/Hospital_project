@@ -10,7 +10,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
 
-  <title>{% block title %}{% endblock %} - Administration | AI Hospital</title>
+  <title>{% block title %}{% endblock %} - Portal | AI Hospital</title>
 
   <!-- Custom fonts for this template-->
   <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
@@ -27,14 +27,14 @@
   <div id="wrapper">
 
     <!-- Sidebar -->
-    <ul class="navbar-nav bg-gradient-danger sidebar sidebar-dark accordion" id="accordionSidebar">
+    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
       <!-- Sidebar - Brand -->
       <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
         <div class="sidebar-brand-icon">
-          <i class="fas fa-sitemap"></i>
+          <i class="fas fa-2x fa-folder-open"></i>
         </div>
-        <div class="sidebar-brand-text mx-3">Administration</div>
+        <div class="sidebar-brand-text mx-3">Portal</div>
       </a>
 
       <!-- Divider -->
@@ -42,7 +42,7 @@
 
       <!-- Nav Item - Dashboard -->
       <li class="nav-item {% block dash %}{% endblock %}">
-        <a class="nav-link" href="{% url 'management:dashboard' %}">
+        <a class="nav-link" href="{% url 'portal:portal_layout' %}">
           <i class="fas fa-fw fa-tachometer-alt"></i>
           <span>Dashboard</span></a>
       </li>
@@ -56,17 +56,17 @@
        <li class="nav-item {% block acc %}{% endblock %}">
         <a class="nav-link" href="index.html">
           <i class="fas fa-fw fa-credit-card"></i>
-          <span>Accounts</span></a>
+          <span>Income</span></a>
       </li>
          <li class="nav-item {% block hr %}{% endblock %}">
         <a class="nav-link" href="index.html">
           <i class="fas fa-fw fa-handshake"></i>
-          <span>Human Resource</span></a>
+          <span>Expenditure</span></a>
       </li>
          <li class="nav-item {% block staff %}{% endblock %}">
         <a class="nav-link" href="{% url 'management:staff' %}">
           <i class="fas fa-fw fa-user"></i>
-          <span>Staff</span></a>
+          <span>Renumeration</span></a>
       </li>
          <li class="nav-item {% block mgt %}{% endblock %}">
         <a class="nav-link" href="{% url 'management:wards' %}">
@@ -109,7 +109,7 @@
           </button>
 
           <!-- Topbar Search -->
-          <a href="{% url 'apps' %}" class="btn btn-sm btn-danger">APPS</a>
+          <a href="{% url 'apps' %}" class="btn btn-sm btn-primary">APPS</a>
 
           <!-- Topbar Navbar -->
           <ul class="navbar-nav ml-auto">

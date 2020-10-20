@@ -1,0 +1,52 @@
+{% extends 'layout/dept_layout.html' %}
+{% block pat %}
+    active
+{% endblock %}
+{% block title %}
+    Patient
+{% endblock %}
+{% block page_title %}
+    Patient
+{% endblock %}
+{% block btn %}
+     <a href="{% url 'department:add-patient' %}" class="btn btn-sm btn-warning">
+        <i class="fas fa-plus"></i>Add Patient
+    </a>
+{% endblock %}
+{% block content %}
+    <div class="card">
+        <div class="card-header">
+            Full List
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-borderless">
+                    <thead>
+                    <tr>
+                        <th>Patient ID</th>
+                        <th>Full Name</th>
+                        <th>Gender</th>
+                        <th>Date of Birth</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for object in object_list %}
+                        <tr>
+                        <td>{{object.patient_id}}</td>
+                        <td>{{object.full_name}}</td>
+                        <td>{{object.gender}}</td>
+                        <td>{{object.date_of_birth}}</td>
+                        <td> <button class="btn btn-sm btn-warning" data-toggle="modal" data-target="#wardModal">
+                                <i class="fas fa-list"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

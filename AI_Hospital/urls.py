@@ -27,6 +27,6 @@ urlpatterns = [
     path('apps/', TemplateView.as_view(template_name='user/apps.html'), name='apps'),
     path('layout/', TemplateView.as_view(template_name='layout/admin_layout.html')),
     path('department/', include(dept_urls, namespace='department')),
-    # path('portal/', include(portal_urls, namespace='portal')),
+    path('portal/', include(portal_urls, namespace='portal')),
     path('administration/', include(manage_urls, namespace='management')),
 ]
