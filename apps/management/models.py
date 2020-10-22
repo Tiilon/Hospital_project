@@ -99,6 +99,7 @@ class Patient(models.Model):
     respiration = models.CharField(max_length=100, blank=True, null=True)
     temperature = models.CharField(max_length=100, blank=True, null=True)
     diagnoses = models.ManyToManyField('MedicalDiagnosis', related_name='patient_diagnosis', blank=True)
+    notes = models.ManyToManyField('department.Note', related_name='patient_notes', blank=True)
     created_at = models.DateTimeField(default=timezone.now)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='patients', blank=True, null=True)
 
@@ -113,6 +114,8 @@ class Patient(models.Model):
 
 class MedicalDiagnosis(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.SET_NULL, related_name='diagnosis_patient', blank=True, null=True)
+    complaints = models.CharField(max_length=1000, blank=True, null=True)
+    symptoms = models.CharField(max_length=2000, blank=True, null=True)
     diagnosis = models.CharField(max_length=100,blank=True, null=True)
     is_admitted = models.BooleanField(blank=True,null=True)
     onset = models.CharField(max_length=100, blank=True, null=True)
@@ -125,6 +128,7 @@ class MedicalDiagnosis(models.Model):
 
     class Meta:
         db_table= 'medical diagnosis'
+        ordering = ('-created_at',)
 
 
 
