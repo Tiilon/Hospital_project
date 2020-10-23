@@ -10,7 +10,8 @@ class Note(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return self.note
+        return str(self.note)
 
     class Meta:
         db_table = 'note'
+        ordering = ('-created_at',)

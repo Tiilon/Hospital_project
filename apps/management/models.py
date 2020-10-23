@@ -51,7 +51,7 @@ class BedAllocate(models.Model):
                                    blank=True, null=True)
 
     def __str__(self):
-        return f"(self.bed) - (self.patient)"
+        return f"{self.bed} - {self.patient}"
 
     class Meta:
         db_table = 'bed_allocate'
@@ -155,4 +155,5 @@ class Treatment(models.Model):
 
     class Meta:
         db_table = 'treatment'
+        ordering = ('-created_at',)
 

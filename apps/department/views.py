@@ -1,11 +1,12 @@
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import *
 from django.contrib.auth.mixins import LoginRequiredMixin
 from . import forms
+from .models import *
 
 # Create your views here.
 from apps.management.models import Patient, MedicalDiagnosis, Treatment
@@ -109,6 +110,7 @@ class PatientDiagnosis(LoginRequiredMixin, RedirectView):
         is_admitted = request.POST.get('is_admitted')
         onset = request.POST.get('onset')
         treatment = request.POST.get('treatment')
+        prescription = request.POST.get('prescription')
 
         if is_admitted == 'True':
             admitted = True
@@ -129,7 +131,8 @@ class PatientDiagnosis(LoginRequiredMixin, RedirectView):
             diagnosis = md,
             treatment= treatment,
             status= 'Pending',
-            created_by=self.request.user
+            created_by=self.request.user,
+            prescription = prescription
 
         )
 
@@ -144,3 +147,65 @@ class PatientDiagnosis(LoginRequiredMixin, RedirectView):
         patient.save()
 
         return super(PatientDiagnosis, self).post(self, request, *args, **kwargs)
+
+@login_required()
+def pat_notes(request,id):
+    patient = Patient.objects.get(id=id)
+    note = request.POST.get('notes')
+
+    my_note = Note.objects.create(
+        patient = patient,
+        note = note,
+        created_by = request.user
+    )
+    patient.notes.add(my_note)
+    patient.save()
+    return redirect(reverse_lazy('department:patient-details',kwargs={'id':id}))
+
+@login_required()
+def add_treatment(request, diagnosis_id, patient_id):
+    diagnosis = MedicalDiagnosis.objects.get(id=diagnosis_id)
+    patient = Patient.objects.get(id=patient_id)
+    treatment = request.POST.get('treatment')
+    prescription = request.POST.get('prescription')
+
+    my_treatment = Treatment.objects.create(
+        diagnosis=diagnosis,
+        treatment=treatment,
+        prescription=prescription,
+        status = 'Pending',
+        created_by=request.user
+    )
+    diagnosis.treatments.add(my_treatment)
+    diagnosis.save()
+    return redirect(reverse_lazy('department:patient-details', kwargs= {'id':patient.id}))
+
+@login_required()
+def complete_treatment(request, treatment_id, patient_id):
+    treatment = Treatment.objects.get(id=treatment_id)
+    patient = Patient.objects.get(id=patient_id)
+    time_completed = request.POST.get('time_completed')
+    date_completed = request.POST.get('date_completed')
+
+    treatment.time_treated = time_completed
+    treatment.date_treated = date_completed
+    treatment.status = 'Completed'
+
+    treatment.save()
+    return redirect(reverse_lazy('department:patient-details', kwargs={'id': patient.id}))
+
+
+
+class CancelTreatment(LoginRequiredMixin,RedirectView):
+
+    def get_redirect_url(self, *args, **kwargs):
+        return reverse_lazy('department:patient-details', id=kwargs.get('patient_id'))
+
+    def get(self, request, *args, **kwargs):
+        treatment = Treatment.objects.get(id=kwargs.get('treatment_id'))
+
+        if treatment.status == 'Pending':
+            treatment.status = "Canceled"
+        treatment.save()
+
+        return super(CancelTreatment, self).get(self, request, *args, **kwargs)
