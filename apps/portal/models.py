@@ -41,3 +41,4 @@ class DefaultBills(models.Model):
 
     class Meta:
         db_table = 'default_bill'
+        ordering = ('-created_at',)
