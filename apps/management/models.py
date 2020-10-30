@@ -37,18 +37,20 @@ class Bed(models.Model):
     def __str__(self):
         return self.number
 
-    class meta:
-        db_table= 'bed'
+    class Meta:
+        db_table = 'bed'
+        ordering = ('number',)
 
 
 class BedAllocate(models.Model):
     bed = models.ForeignKey(Bed, related_name='bed_allocate_bed', blank='True', null=True, on_delete=models.SET_NULL)
     patient = models.ForeignKey('Patient', related_name='bed_allocate_patient', null=True, blank=True, on_delete=models.SET_NULL)
-    admitted_at = models.DateField(blank=True, null=True)
-    discharged_at = models.DateField(blank=True, null=True)
+    date_admitted = models.DateField(blank=True, null=True)
+    time_admitted = models.TimeField(blank=True, null=True)
+    time_discharged = models.TimeField(blank=True, null=True)
+    date_discharged = models.DateField(blank=True, null=True)
     created_at = models.DateTimeField(default=timezone.now)
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='bed_allocates',
-                                   blank=True, null=True)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='bed_allocates', blank=True, null=True)
 
     def __str__(self):
         return f"{self.bed} - {self.patient}"
@@ -73,7 +75,7 @@ GENDER={
 
 PATIENT_TYPE={
     ('OPD', 'OPD'),
-    ('WARD', 'WARD'),
+    ('Ward', 'Ward'),
     ('ER', 'EMERGENCY'),
 }
 
@@ -92,7 +94,11 @@ class Patient(models.Model):
     gender = models.CharField(max_length=100, blank=True, null=True, choices= GENDER)
     marital_status = models.CharField(max_length=100,blank=True,null=True,choices=MARITAL)
     date_of_birth = models.DateField(blank=True, null=True)
-    admitted_at = models.DateTimeField(blank=True, null=True)
+    date_admitted = models.DateField(blank=True, null=True)
+    time_admitted = models.TimeField(blank=True, null=True)
+    time_discharged = models.TimeField(blank=True, null=True)
+    date_discharged = models.DateField(blank=True, null=True)
+    bed = models.ForeignKey(Bed, on_delete=models.SET_NULL, related_name='patient_bed', blank=True, null=True)
     discharged_at = models.DateTimeField(blank=True, null=True)
     weight = models.CharField(max_length=10, blank=True, null=True)
     bp = models.CharField(max_length=100, blank=True, null=True)
@@ -111,6 +117,7 @@ class Patient(models.Model):
 
     class Meta:
         db_table = 'patient'
+
 
 class MedicalDiagnosis(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.SET_NULL, related_name='diagnosis_patient', blank=True, null=True)

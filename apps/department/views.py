@@ -8,8 +8,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from . import forms
 from .models import *
 
-# Create your views here.
-from apps.management.models import Patient, MedicalDiagnosis, Treatment
+from apps.management.models import Patient, MedicalDiagnosis, Treatment, Ward, Bed, BedAllocate
 
 
 @login_required()
@@ -30,10 +29,12 @@ class NewPatient(LoginRequiredMixin, CreateView):
 
         return valid
 
+
 class Patients(LoginRequiredMixin, ListView):
     template_name = 'department/patients.html'
     queryset = Patient.objects.all()
     model = Patient
+
 
 class PatientDetails(LoginRequiredMixin, DetailView):
     template_name = 'department/patient_details.html'
@@ -45,6 +46,7 @@ class PatientDetails(LoginRequiredMixin, DetailView):
         context = super(PatientDetails,self).get_context_data(**kwargs)
         context['age'] = round((timezone.now().date()-self.object.date_of_birth).days/365)
         return context
+
 
 @login_required()
 def vital_sign(request, id):
@@ -66,6 +68,7 @@ def vital_sign(request, id):
     patient.save()
 
     return HttpResponseRedirect(reverse_lazy('department:patient-details', kwargs={'id':patient.id}))
+
 
 class VitalSigns(LoginRequiredMixin, RedirectView):
 
@@ -91,16 +94,17 @@ class VitalSigns(LoginRequiredMixin, RedirectView):
         patient.save()
         return super(VitalSigns, self).post(self,request,*args,**kwargs)
 
+
 class OPDPatients(LoginRequiredMixin, ListView):
     template_name = 'department/opd.html'
     queryset = Patient.objects.filter(patient_type='OPD')
     model = Patient
 
+
 class PatientDiagnosis(LoginRequiredMixin, RedirectView):
 
     def get_redirect_url(self, *args, **kwargs):
         return reverse_lazy('department:patient-details', kwargs={'id':kwargs.get('id')})
-
 
     def post(self, request, *args, **kwargs):
         patient = Patient.objects.get(id = kwargs.get('id'))
@@ -148,6 +152,7 @@ class PatientDiagnosis(LoginRequiredMixin, RedirectView):
 
         return super(PatientDiagnosis, self).post(self, request, *args, **kwargs)
 
+
 @login_required()
 def pat_notes(request,id):
     patient = Patient.objects.get(id=id)
@@ -161,6 +166,7 @@ def pat_notes(request,id):
     patient.notes.add(my_note)
     patient.save()
     return redirect(reverse_lazy('department:patient-details',kwargs={'id':id}))
+
 
 @login_required()
 def add_treatment(request, diagnosis_id, patient_id):
@@ -180,6 +186,7 @@ def add_treatment(request, diagnosis_id, patient_id):
     diagnosis.save()
     return redirect(reverse_lazy('department:patient-details', kwargs= {'id':patient.id}))
 
+
 @login_required()
 def complete_treatment(request, treatment_id, patient_id):
     treatment = Treatment.objects.get(id=treatment_id)
@@ -195,7 +202,6 @@ def complete_treatment(request, treatment_id, patient_id):
     return redirect(reverse_lazy('department:patient-details', kwargs={'id': patient.id}))
 
 
-
 class CancelTreatment(LoginRequiredMixin,RedirectView):
 
     def get_redirect_url(self, *args, **kwargs):
@@ -209,3 +215,107 @@ class CancelTreatment(LoginRequiredMixin,RedirectView):
         treatment.save()
 
         return super(CancelTreatment, self).get(self, request, *args, **kwargs)
+
+
+class Wards(LoginRequiredMixin, ListView):
+    template_name = 'department/department_ward_list.html'
+    model = Ward
+    queryset = Ward.objects.all()
+
+
+class WardDetails(LoginRequiredMixin, DetailView):
+    template_name = 'department/department_ward_details.html'
+    model = Ward
+    queryset = Ward.objects.all()
+    pk_url_kwarg = 'id'
+
+    def get_context_data(self, **kwargs):
+        context = super(WardDetails, self).get_context_data(**kwargs)
+
+        context['patients'] = Patient.objects.filter(patient_type='Ward')
+        return context
+
+
+@login_required()
+def allocate_bed(request, bed_id,):
+    bed = Bed.objects.get(id=bed_id)
+    patient = Patient.objects.get(id=request.POST.get('patient_id'))
+    admitted_at = request.POST.get('admitted_at')
+    time_admitted = request.POST.get('time_admitted')
+
+    if patient.bed:
+        context={'error': patient.full_name() + 'has already been allocated to ' + patient.bed.number}
+        return  render(request, 'department/department_ward_details.html', context)
+
+    if bed.status == 'Assigned':
+        context = {
+            'error': 'Bed has already been assigned to ' + bed.allocate.patient.full_name()
+        }
+        return render(request, 'department/department_ward_details.html', context)
+    else:
+        bed.status = 'Assigned'
+
+    allocate = BedAllocate.objects.create(
+        bed=bed,
+        patient=patient,
+        created_by=request.user,
+        date_admitted=admitted_at,
+        time_admitted=time_admitted,
+    )
+
+    bed.allocate = allocate
+    bed.bed_allocates.add(allocate)
+    patient.time_admitted = time_admitted
+    patient.date_admitted = admitted_at
+    patient.bed = bed
+    bed.save()
+    patient.save()
+
+    return redirect(reverse_lazy('department:ward-details', kwargs={'id': bed.ward.id}))
+
+@login_required()
+def ward_details(request, id):
+    object = Ward.objects.get(id=id)
+    patients = Patient.objects.filter(patient_type='Ward')
+    error = ''
+
+    context = {
+        'object': object,
+        'patients': patients,
+        'error': error,
+    }
+
+    if request.method == "POST":
+        bed = Bed.objects.get(id=request.POST.get('bed_id'))
+        patient = Patient.objects.get(id=request.POST.get('patient_id'))
+        admitted_at = request.POST.get('admitted_at')
+        time_admitted = request.POST.get('time_admitted')
+
+        if patient.bed:
+            context['error']= patient.full_name() + ' has already been allocated to bed number ' + patient.bed.number
+            return render(request, template_name='department/department_ward_details.html', context=context)
+
+        if bed.status == 'Assigned':
+            context['error'] = 'Bed has already been assigned to ' + bed.allocate.patient.full_name()
+            return render(request, 'department/department_ward_details.html', context)
+        else:
+            bed.status = 'Assigned'
+
+        allocate = BedAllocate.objects.create(
+            bed=bed,
+            patient=patient,
+            created_by=request.user,
+            date_admitted=admitted_at,
+            time_admitted=time_admitted,
+        )
+
+        bed.allocate = allocate
+        bed.bed_allocates.add(allocate)
+        patient.date_admitted = admitted_at
+        patient.time_admitted = time_admitted
+        patient.bed = bed
+        bed.save()
+        patient.save()
+
+        return redirect(reverse_lazy('department:ward-details', kwargs={'id': id}))
+    return render(request, 'department/department_ward_details.html', context)

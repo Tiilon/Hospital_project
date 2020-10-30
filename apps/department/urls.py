@@ -15,4 +15,7 @@ urlpatterns =[
     path('patient/treatment/add/<patient_id><diagnosis_id>/', add_treatment, name= 'add_treatment'),
     path('patient/treatment/complete/<treatment_id><patient_id>/',complete_treatment, name='complete-treatment'),
     path('patient/treatment/cancel/<treatment_id>/<patient_id>/', CancelTreatment.as_view(), name= 'cancel-treatment'),
+    path('wards/', Wards.as_view(), name='wards'),
+    path('ward/<id>', ward_details, name='ward-details'),
+    path('ward/bed/allocate/<bed_id>/', allocate_bed, name='bed-allocate'),
 ]

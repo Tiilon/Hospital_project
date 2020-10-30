@@ -94,7 +94,7 @@ def ward_details(request, id):
             new_bed = Bed.objects.create(
                 number=bed_number,
                 ward=ward,
-                status= 'Unaasigned',
+                status= 'Unassigned',
                 created_by= request.user
             )
             ward.beds.add(new_bed)
