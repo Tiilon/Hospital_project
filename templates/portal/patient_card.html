@@ -1,0 +1,26 @@
+{% extends 'layout/portal_layout.html' %}
+{% block bill %}
+    active
+{% endblock %}
+{% block title %}
+    {{ object.full_name }}
+{% endblock %}
+{% block page_title %}
+    {{ object.full_name }}
+{% endblock %}
+{% block content %}
+ <div class="row">
+        <div class="col-4">
+            <div class="card border-dark">
+                <div class="card-body">
+                    <p><h3 style="color: blue">Ai Hospital- Patient Card</h3></p>
+                    <p>ID: {{ object.patient_id }}</p>
+                    <p>Full name: {{ object.full_name }}</p>
+                    <p>Gender: {{ object.gender }}</p>
+                    <p>DOB: {{ object.date_of_birth }}</p>
+                    <p>Date issued: {{ object.created_at }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

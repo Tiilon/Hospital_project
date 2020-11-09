@@ -1,0 +1,55 @@
+{% extends 'layout/admin_layout.html' %}
+{% block page_title %}
+    Human Resource
+{% endblock %}
+{% block title %}
+    Human Resource
+{% endblock %}
+{% block btn %}
+    <form action="{% url 'management:resolve' complaints.id %}" method="post">
+    {% csrf_token %}
+        {% if complaints.status != 'Resolved' %}
+         <button class="btn btn-sm btn-info" type="submit">Resolved</button>
+        {% endif %}
+    </form>
+{% endblock %}
+{% block hr %}active{% endblock %}
+{% block content %}
+        <div class="row">
+            <div class="col-6">
+                <div class="list-group list-group-flush">
+                    <div class="card-body">
+                        <div class="list-group-item">{{ complaints.complaints }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6"></div>
+        </div>
+        <div class="row">
+            <div class="col-6"></div>
+            <div class="col-6">
+                <div class="list-group list-group-flush">
+                    <div class="card-body">
+                        {% if complaints.review %}
+                         <div class="list-group-item">{{ complaints.review }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-5 ">
+            <div class="col-8 ">
+                {% if not complaints.review %}
+                    <form method="post" action="{% url 'management:response' complaints.id%}">
+                        {% csrf_token %}
+                        <textarea name="review" id="id_review" class="form-control float-right" placeholder="" cols="5" rows="3"></textarea>
+                        <button class="btn btn-info mt-2 float-right"><i class="fa fa-paper-plane"></i>Respond</button>
+                    </form>
+                {% elif complaints.review%}
+                    <a href="{% url 'management:hr_view' %}">
+                        <button class="btn btn-info mt-2 float-right"><i class="fa fa-angle-double-left"></i>Go back</button>
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+{% endblock %}

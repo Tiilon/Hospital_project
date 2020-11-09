@@ -1,19 +1,22 @@
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ValidationError
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import *
 from django.contrib.auth.mixins import LoginRequiredMixin
+
+from apps.portal.models import Bill, DefaultBills
 from . import forms
 from .models import *
-
 from apps.management.models import Patient, MedicalDiagnosis, Treatment, Ward, Bed, BedAllocate
 
 
 @login_required()
 def dept_dashboard(request):
     return render(request=request, template_name='department/dept_dashboard.html')
+
 
 class NewPatient(LoginRequiredMixin, CreateView):
     template_name = 'department/new_patient.html'
@@ -25,6 +28,15 @@ class NewPatient(LoginRequiredMixin, CreateView):
         valid = super(NewPatient, self).form_valid(form)
 
         form.instance.created_by = self.request.user
+        card_charge = DefaultBills.objects.get(bill_type='CB')
+        Bill.objects.create(
+            patient=form.instance,
+            bill_type='CB',
+            amount= card_charge.amount,
+            status=0,
+            created_by= self.request.user
+
+        )
         form.save()
 
         return valid
@@ -319,3 +331,26 @@ def ward_details(request, id):
 
         return redirect(reverse_lazy('department:ward-details', kwargs={'id': id}))
     return render(request, 'department/department_ward_details.html', context)
+
+
+class DischargePatient(LoginRequiredMixin, RedirectView):
+    def get_redirect_url(self, *args, **kwargs):
+        return reverse_lazy('department:patient-details', kwargs={'id': kwargs.get('id')})
+
+    def get(self, request, *args, **kwargs):
+        patient_id= kwargs.get('id')
+        patient = Patient.objects.get(id=patient_id)
+
+        bill_charge = DefaultBills.objects.get(bill_type='CnB')
+
+
+        Bill.objects.create(
+            patient=patient,
+            bill_type='WB' if patient.patient_type == 'Ward' else 'CnB',
+            amount=bill_charge.amount if patient.patient_type == 'OPD' else None,
+            status=0,
+            created_by=self.request.user
+        )
+        patient.patient_type = 'DISCHARGED'
+        patient.save()
+        return super(DischargePatient, self).get(self, *args, **kwargs)

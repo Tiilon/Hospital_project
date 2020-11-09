@@ -1,0 +1,89 @@
+{% extends 'layout/portal_layout.html' %}
+{% block title %}
+    {{ object.patient.full_name }}
+{% endblock %}
+{% block page_title %}
+    {{ object.patient.full_name }}
+{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-8">
+            <div class="list-group-flush">
+                <div class="list-group-item">
+                    <div class="row">
+                        <div class="col">Date admitted</div>
+                        <div class="col" align="right">{{ object.patient.date_admitted }}</div>
+                    </div>
+                </div>
+                <div class="list-group-item">
+                    <div class="row">
+                        <div class="col">{% if object.status == 1 %}Date discharged{% else %}Date to be discharged{% endif %}</div>
+                        <div class="col" align="right">{% if object.status == 1 %}{{ object.patient.date_discharged }}{% else %}{{ date_to_be_discharged }}{% endif %}</div>
+                    </div>
+                </div>
+                <div class="list-group-item">
+                    <div class="row">
+                        <div class="col">Number of days</div>
+                        <div class="col" align="right">{% if object.status == 1 %}{{ days_spent }}{% else %}{{ number_of_days }}{% endif %}</div>
+                    </div>
+                </div>
+                <div class="list-group-item">
+                    <div class="row">
+                        <div class="col">Amount per day</div>
+                        <div class="col" align="right">{{ amount_per_day }}</div>
+                    </div>
+                </div>
+                <div class="list-group-item">
+                    <div class="row">
+                        <div class="col">{% if object.status == 1 %}Amount paid{% else %}Total amount to be paid{% endif %}</div>
+                        <div class="col" align="right">{% if object.status == 1 %}{{ object.amount }}{% else %}{{ total_amount }}{% endif %}</div>
+                    </div>
+                </div>
+            </div>
+            {% if object.status == 0 %}
+            <a href="{% url 'portal:confirm-discharge' object.uuid %}" class="btn btn-sm btn-success" type="submit">Confirm payment</a>
+            {% endif %}
+        </div>
+        {% if object.status == 1 %}
+        <div class="card col-4">
+            <div class="card-header">
+                <h3>Ai Hospital</h3>
+                <h6>Wl 395/1 Cp</h6>
+                <p><small>0500009650</small></p>
+            </div>
+             <div class="card-body">
+                 <table class="table-bordered table-responsive table-sm">
+                     <thead>
+                     <tr>
+                         <th>Patient name</th>
+                         <th>Date admitted</th>
+                         <th>Date discharged</th>
+                         <th>Number of days</th>
+                         <th>Amount per day</th>
+                         <th>Total Amount</th>
+                     </tr>
+                     </thead>
+                     <tbody>
+                     <tr>
+                         <td>{{ object.patient.full_name }}</td>
+                         <td>{{ object.patient.date_admitted }}</td>
+                         <td>{{ object.patient.date_discharged }}</td>
+                         <td>{{ object.number_of_days }}</td>
+                         <td>{{ amount_per_day }}</td>
+                         <td>GHS {{ object.amount }} </td>
+                     </tr>
+                     </tbody>
+                 </table>
+                 <p>This receipt was issued by user</p>
+             </div>
+        </div>
+        {% endif %}
+    </div>
+{% endblock %}
+{% block btn %}
+    {% if object.status == 1 %}
+    <a href="" class="btn btn-sm btn-success">
+        <i class="fa fa-print"></i>Print
+    </a>
+    {% endif %}
+{% endblock %}

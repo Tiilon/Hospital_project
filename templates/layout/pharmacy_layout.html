@@ -10,7 +10,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
 
-  <title>{% block title %}{% endblock %} - Administration | AI Hospital</title>
+  <title>{% block title %}{% endblock %} - Pharmacy | AI Hospital</title>
 
   <!-- Custom fonts for this template-->
   <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
@@ -27,14 +27,14 @@
   <div id="wrapper">
 
     <!-- Sidebar -->
-    <ul class="navbar-nav bg-gradient-danger sidebar sidebar-dark accordion" id="accordionSidebar">
+    <ul class="navbar-nav bg-gradient-success sidebar sidebar-dark accordion" id="accordionSidebar">
 
       <!-- Sidebar - Brand -->
-      <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+      <a class="sidebar-brand d-flex align-items-center justify-content-center" href="#">
         <div class="sidebar-brand-icon">
-          <i class="fas fa-sitemap"></i>
+          <i class="fas fa-plus-square"></i>
         </div>
-        <div class="sidebar-brand-text mx-3">Administration</div>
+        <div class="sidebar-brand-text mx-3">Pharmacy</div>
       </a>
 
       <!-- Divider -->
@@ -42,7 +42,7 @@
 
       <!-- Nav Item - Dashboard -->
       <li class="nav-item {% block dash %}{% endblock %}">
-        <a class="nav-link" href="{% url 'management:dashboard' %}">
+        <a class="nav-link" href="{% url 'pharmacy:dashboard' %}">
           <i class="fas fa-fw fa-tachometer-alt"></i>
           <span>Dashboard</span></a>
       </li>
@@ -53,35 +53,26 @@
       <!-- Heading -->
 
       <!-- Nav Item - Pages Collapse Menu -->
-       <li class="nav-item">
-        <a class="nav-link collapsed {% block acc %}{% endblock %}" href="#" data-toggle="collapse" data-target="#accountsCollapse" aria-expanded="true" aria-controls="accountsCollapse">
+       <li class="nav-item {% block treat %}{% endblock %}">
+        <a class="nav-link" href="index.html">
           <i class="fas fa-fw fa-credit-card"></i>
-          <span>Accounts</span>
-        </a>
-        <div id="accountsCollapse" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
-          <div class="bg-danger py-2 collapse-inner rounded">
-            <a class="collapse-item {% block exp %}{% endblock %}" href="#"><strong>Expenditure</strong></a>
-            <a class="collapse-item {% block rev %}{% endblock %}" href="#"><strong>Revenue</strong></a>
-            <a class="collapse-item {% block rem %}{% endblock %}" href="#"><strong>Remuneration</strong></a>
-            <a class="collapse-item {% block req %}{% endblock %}" href="{% url 'management:requests' %}"><strong>Requests</strong></a>
-          </div>
-        </div>
+          <span>Treatment</span></a>
       </li>
-         <li class="nav-item {% block hr %}{% endblock %}">
+         <li class="nav-item {% block med %}{% endblock %}">
         <a class="nav-link" href="{% url 'management:hr_view' %}">
           <i class="fas fa-fw fa-handshake"></i>
-          <span>Human Resource</span></a>
+          <span>Medicine</span></a>
       </li>
-         <li class="nav-item {% block staff %}{% endblock %}">
-        <a class="nav-link" href="{% url 'management:staff' %}">
-          <i class="fas fa-fw fa-user"></i>
-          <span>Staff</span></a>
-      </li>
-         <li class="nav-item {% block mgt %}{% endblock %}">
-        <a class="nav-link" href="{% url 'management:wards' %}">
-          <i class="fas fa-fw fa-cogs"></i>
-          <span>Management</span></a>
-      </li>
+{#         <li class="nav-item {% block staff %}{% endblock %}">#}
+{#        <a class="nav-link" href="{% url 'management:staff' %}">#}
+{#          <i class="fas fa-fw fa-user"></i>#}
+{#          <span>Staff</span></a>#}
+{#      </li>#}
+{#         <li class="nav-item {% block mgt %}{% endblock %}">#}
+{#        <a class="nav-link" href="{% url 'management:wards' %}">#}
+{#          <i class="fas fa-fw fa-cogs"></i>#}
+{#          <span>Management</span></a>#}
+{#      </li>#}
       </li>
 
       <!-- Divider -->
@@ -118,7 +109,7 @@
           </button>
 
           <!-- Topbar Search -->
-          <a href="{% url 'apps' %}" class="btn btn-sm btn-danger">APPS</a>
+          <a href="{% url 'apps' %}" class="btn btn-sm btn-success">APPS</a>
 
           <!-- Topbar Navbar -->
           <ul class="navbar-nav ml-auto">

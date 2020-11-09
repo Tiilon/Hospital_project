@@ -1,0 +1,149 @@
+{% extends 'layout/staff_layout.html' %}
+{% load humanize %}
+{% block com %}
+    active
+{%endblock  %}
+{% block title %}
+    Complaints
+{% endblock %}
+{% block css %}
+    <style>
+        .container_com {
+            height: 13cm;
+            overflow-y: auto;
+        }
+    </style>
+{% endblock %}
+{% block  page_title %}
+    Complaints
+{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col">
+            <div class="accordion" id="accordionExample">
+                <div class="card">
+                    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+                        <div class="card-body">
+                            <div class="container_com">
+                                <div class="list-group">
+                                    <div class="list-group-item">
+                                        {% for complaint in complaints %}
+                                            <div id="accordion">
+                                                <div class="card">
+                                                    <div {% if complaint.status == 'Pending' %}class="card-header border-left-primary"{% endif %}{% if complaint.status == 'Canceled' %}class="card-header border-left-danger"{% endif %}{% if complaint.status == 'Resolved' %}class="card-header border-left-success"{% endif %} id="headingOne">
+                                                        <h5 class="mb-0">
+                                                            <small>{% if not complaint.is_seen %}<i class="fa fa-check text-primary"></i>{{ complaint.seen_at | naturaltime }}{% elif complaint.is_seen %}<i class="fa fa-check-double text-success"></i>{{ complaint.review_at | naturaltime }}{% endif %}</small>
+                                                            <div>
+                                                                <small>{{ complaint.created_at.date }}</small>
+                                                            </div>
+                                                            <div><small>Complaint: {{ complaint.complaints }}</small></div>
+                                                            <small>response: {{ complaint.review }} </small>
+                                                            <div class="row float-right">
+                                                                {% if not complaint.status == 'Canceled' and complaint.status != 'Resolved' %}
+                                                                <form action="{% url 'staff:cancel' complaint.id %} " method="post">
+                                                                        {% csrf_token %}
+                                                                    <button class="btn btn " data-target="#{{ complaint.id }}">
+                                                                        <i class="fa fa-ban " style="color: red"></i>
+                                                                    </button>
+                                                                </form>
+                                                                {% endif %}
+                                                                <button class="btn btn" data-toggle="collapse" data-target="#collapseOne{{ complaint.id }}" aria-expanded="true" aria-controls="collapseOne">
+                                                                    <i class="fa fa-sort"></i>
+                                                                </button>
+                                                            </div>
+                                                        </h5>
+                                                    </div>
+                                                    <div id="collapseOne{{ complaint.id }}" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+                                                        <div class="card-body">
+                                                            <div class="row">
+                                                                    <div class="col"><small>seen by:  {{ complaint.seen_by }}</small></div>
+                                                                    <div class="col"><small>response by:  {{ complaint.review_by }}</small></div>
+                                                                    <div class="col"><small>response time:  {{ complaint.review_at | naturaltime }}</small></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="mt-3">
+        <form action="{% url 'staff:create' %}" method="post">
+            {% csrf_token %}
+            <div class="row">
+                {{ form }}
+            </div>
+            <button type="submit" class="btn btn-info btn-block mt-2">Submit</button>
+        </form>
+    </div>
+{% endblock %}
+{#{% extends 'layout/staff_layout.html' %}#}
+{#{% block com %}#}
+{#    active#}
+{#{% endblock %}#}
+{#{% block title %}#}
+{#    Staff#}
+{#{% endblock %}#}
+{#{% block page_title %}#}
+{#    Staff | Complaints#}
+{#{% endblock %}#}
+{#{% block content %}#}
+{#    <div class="row">#}
+{#        <div class="col-6">#}
+{#            <div class="card">#}
+{#                <div class="card-header">Complaint Form</div>#}
+{#                <div class="card-body">#}
+{#                    <form method="POST" action="">#}
+{#                        {% csrf_token %}#}
+{#                        {{ form }}#}
+{#                        <button type="submit" class="btn btn-sm btn-success">Submit</button>#}
+{#                    </form>#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+{#        <div class="col-6">#}
+{#            <div class="card">#}
+{#                <div class="card-header">#}
+{#                    Previous Complaints#}
+{#                </div>#}
+{#                <div class="card-body">#}
+{#                    <div class="list-group">#}
+{#                        <div class="list-group-item">#}
+{#                            {% for complaint in complaints %}#}
+{#                                <div id="accordion">#}
+{#                                    <div class="card">#}
+{#                                        <div class="card-header" id="headingOne">#}
+{#                                            <h5 class="mb-0">#}
+{#                                                <div>#}
+{#                                                    {{ complaint.created_at }}#}
+{#                                                </div>#}
+{#                                                {{ complaint.complaints }}#}
+{#                                                <button class="btn btn float-right" data-toggle="collapse" data-target="#collapseOne{{ complaint.id }}" aria-expanded="true" aria-controls="collapseOne">#}
+{#                                                    <i class="fa fa-sort"></i>#}
+{#                                                </button>#}
+{#                                            </h5>#}
+{#                                        </div>#}
+{#                                        <div id="collapseOne{{ complaint.id }}" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">#}
+{#                                            <div class="card-body">#}
+{#                                                <small>review: </small>#}
+{#                                                <small>read by: </small>#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                            {% endfor %}#}
+{#                        </div>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+{#{% endblock %}#}

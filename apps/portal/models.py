@@ -8,9 +8,14 @@ BILL_TYPES = {
     ('LB', 'Lab Bills'),
     ('PB', 'Procedure Bills'),
     ('PhB', 'Pharmacy Bills'),
-    ('CB', 'Card Bills')
+    ('CB', 'Card Bills'),
+    ('CnB', 'Consultation Bill')
 }
 
+STATUS = {
+    (1, 'Paid'),
+    (0, 'Not Paid')
+}
 
 class Bill(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
@@ -19,11 +24,12 @@ class Bill(models.Model):
     patient = models.ForeignKey('management.Patient', on_delete=models.SET_NULL, related_name='bill_patient', blank=True, null=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     number_of_days = models.IntegerField(blank=True, null=True)
+    status = models.IntegerField(blank=True, null=True, choices=STATUS)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='bills', blank=True, null=True)
     created_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return self.get_bill_type_display()
+        return str(self.get_bill_type_display())
 
     class Meta:
         db_table = 'bill'

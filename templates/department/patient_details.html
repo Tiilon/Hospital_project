@@ -10,11 +10,12 @@
 {% block page_title %}
     {{ object.patient_id }}
 {% endblock %}
-{#{% block btn %}#}
-{#     <a href="{% url 'department:add-patient' %}" class="btn btn-sm btn-warning">#}
-{#        <i class="fas fa-plus"></i>Add Patient#}
-{#    </a>#}
-{#{% endblock %}#}
+{% block btn %}
+    {% if object.patient_type == 'Ward' or object.patient_type == 'OPD' %}
+     <a href="{% url 'department:patient-discharge' object.id %}" class="btn btn-sm btn-danger">
+        <i></i>Discharged</a>
+    {% endif %}
+{% endblock %}
 {% block content %}
     <div class="row">
         <div class="col-8">

@@ -21,8 +21,10 @@ class UserForm(ModelForm):
 
         return staff_id
 
+
 class WardForm(ModelForm):
 
     class Meta:
         model = Ward
-        fields=('label', )
+        fields = ('label', )
+

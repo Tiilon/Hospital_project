@@ -77,6 +77,7 @@ PATIENT_TYPE={
     ('OPD', 'OPD'),
     ('Ward', 'Ward'),
     ('ER', 'EMERGENCY'),
+    ('DISCHARGED', 'DISCHARGED')
 }
 
 
@@ -86,8 +87,10 @@ MARITAL = {
     ('Divorced', 'Divoreced'),
     ('Widowed', 'Widowed'),
 }
+
+
 class Patient(models.Model):
-    patient_id= models.CharField(default=generate, unique=True, editable=False, max_length=100)
+    patient_id = models.CharField(default=generate, unique=True, editable=False, max_length=100)
     first_name = models.CharField(max_length=100, blank=True, null=True)
     last_name = models.CharField(max_length=100, blank=True, null=True)
     patient_type = models.CharField(max_length=100, blank=True, null=True, choices=PATIENT_TYPE)
@@ -146,11 +149,11 @@ TREATMENT_STATUS = {
 }
 
 
-
 class Treatment(models.Model):
     diagnosis = models.ForeignKey(MedicalDiagnosis, on_delete=models.SET_NULL, related_name='treatment_diagnosis', blank='null', null=True)
     treatment = models.CharField(max_length=2000, blank=True, null=True)
     prescription = models.CharField(max_length=2000, blank=True,null=True)
+    pharmacy_prescription = models.ForeignKey('pharmacy.Prescription', on_delete= models.SET_NULL, related_name='treatment_prescription', blank=True, null=True)
     status = models.CharField(max_length=100,blank=True,null=True, choices= TREATMENT_STATUS)
     time_treated = models.TimeField(blank=True, null=True)
     date_treated= models.DateField(blank=True, null=True)
@@ -164,3 +167,74 @@ class Treatment(models.Model):
         db_table = 'treatment'
         ordering = ('-created_at',)
 
+
+COMPLAINTS_STATUS = {
+    ('Pending', 'Pending'),
+    ('Resolved', 'Resolved'),
+    ('Canceled', 'Canceled'),
+
+}
+
+
+class Complaints(models.Model):
+    complaints = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(default=timezone.now)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='complaints', blank=False, null=True)
+    review = models.CharField(max_length=3000, blank=True, null=True)
+    is_seen = models.BooleanField(blank=True, null=True, default=False)
+    seen_at = models.DateTimeField(blank=True, null=True)
+    seen_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='complaint_seen', blank=False, null=True)
+    status = models.CharField(max_length=200, blank=True, null=True, choices=COMPLAINTS_STATUS)
+    review_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='complaint_review',blank=False, null=True)
+    review_at = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        ordering = ('-created_at',)
+        db_table = 'complaint'
+
+    def __str__(self):
+        return str(self.complaints)
+
+
+DEPARTMENTS ={
+    ('Ward', 'Ward'),
+    ('Pharmacy', 'Pharmacy'),
+    ('Account', 'Account'),
+    ('Management', 'Management'),
+    ('HR', 'Human Resource')
+}
+
+REQUEST_STATUS = {
+    (0, 'Pending'),
+    (1, 'Accepted'),
+    (2, 'Rejected')
+}
+
+
+class Request(models.Model):
+    department = models.CharField(max_length=200, blank=True, null=True, choices=DEPARTMENTS)
+    description = models.TextField(max_length=5000, blank=True, null=True)
+    status = models.IntegerField(blank=True, null= True, choices=REQUEST_STATUS)
+    comments = models.CharField(max_length=1000, blank=True, null=True)
+    created_at = models.DateTimeField(default=timezone.now)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='requests', blank=True, null=True)
+
+    def __str__(self):
+        return str(self.department)
+
+    class Meta:
+        db_table = 'request'
+
+
+class Expenditure(models.Model):
+    category = models.CharField(max_length=100, blank=True, null=True)
+    item = models.CharField(max_length=300, blank=True, null=True)
+    cost = models.DecimalField(max_digits=10, blank=True, null=True, decimal_places=2)
+    created_at = models.DateTimeField(default=timezone.now)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='expenditure', blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.category} - {self.cost}"
+
+    class Meta:
+        db_table = 'expenditure'
