@@ -9,22 +9,30 @@ MEDICINE_TYPE ={
     ('Capsule', 'Capsule'),
     ('Tablet', 'Tablet'),
 }
+
+
 class Medicine(models.Model):
     name = models.CharField(max_length=100, blank=True, null=True)
     medicine_type = models.CharField(max_length=100, blank=True, null=True, choices=MEDICINE_TYPE)
-    boxes_bought = models.IntegerField(blank=True, null=True, default=0)
-    boxes_left = models.IntegerField(blank=True, null=True, default=0)
-    boxes_sold = models.IntegerField(blank=True, null=True, default=0)
-    pieces_per_boxes = models.IntegerField(blank=True, null=True, default=0)
-    pieces_left = models.IntegerField(blank=True, null=True, default=0)
-    pieces_sold = models.IntegerField(blank=True, null=True, default=0)
-    pieces = models.IntegerField(blank=True, null=True, default=0)
-    expiry_date = models.DateField(blank=True, null=True)
-    manufacture_date = models.DateField(blank=True, null=True)
     manufacturer = models.CharField(max_length=200, blank=True, null=True)
-    piece_selling_price = models.DecimalField(decimal_places=2,max_digits=10,blank=True,null=True)
-    piece_cost_price = models.DecimalField(decimal_places=2,max_digits=10,blank=True,null=True)
+    manufacture_date = models.DateField(blank=True, null=True)
+    expiry_date = models.DateField(blank=True, null=True)
     prescribed_medicines = models.ManyToManyField('PrescribedMedicine', related_name='medicine_prescribed_medicines', blank=True)
+    cost_price_per_unit = models.DecimalField(decimal_places=2, max_digits=10, blank=True, null=True)
+    no_in_box = models.IntegerField(blank=True, null=True, default=0)
+    cost_price_per_box = models.DecimalField(decimal_places=2, max_digits=10, blank=True, null=True)
+    boxes_bought = models.IntegerField(blank=True, null=True, default=0)
+    total_cost = models.DecimalField(decimal_places=2, max_digits=10, blank=True, null=True)
+    selling_price_per_unit = models.DecimalField(decimal_places=2, max_digits=10, blank=True, null=True)
+    selling_price_per_box = models.DecimalField(decimal_places=2, max_digits=10, blank=True, null=True)
+    sold_units = models.IntegerField(blank=True, null=True, default=0)
+    sold_boxes = models.IntegerField(blank=True, null=True, default=0)
+    total_sales = models.DecimalField(decimal_places=2, max_digits=10, blank=True, null=True)
+    units_left = models.IntegerField(blank=True, null=True, default=0)
+    boxes_left = models.IntegerField(blank=True, null=True, default=0)
+    total_no_units_accumulated = models.IntegerField(blank=True, null=True, default=0)
+    total_no_boxes_accumulated = models.IntegerField(blank=True, null=True, default=0)
+    total_cost_accumulated = models.DecimalField(decimal_places=2, max_digits=10, blank=True, null=True)
     created_at = models.DateTimeField(default=timezone.now)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='medicines', blank=True, null=True)
 

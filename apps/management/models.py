@@ -6,6 +6,9 @@ from django.conf import settings
 from django.utils import timezone
 
 # Create your models here.
+
+
+
 class Ward(models.Model):
     label = models.CharField(max_length=100, blank=True, null=True)
     incharge = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='ward_incharge', blank=True, null=True)
@@ -161,7 +164,7 @@ class Treatment(models.Model):
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='treatments',blank=True, null=True)
 
     def __str__(self):
-        return self.treatment + ' - ' + self.prescription
+        return str(self.treatment) + ' - ' + str(self.prescription)
 
     class Meta:
         db_table = 'treatment'
@@ -229,12 +232,28 @@ class Request(models.Model):
 class Expenditure(models.Model):
     category = models.CharField(max_length=100, blank=True, null=True)
     item = models.CharField(max_length=300, blank=True, null=True)
-    cost = models.DecimalField(max_digits=10, blank=True, null=True, decimal_places=2)
+    total_cost = models.DecimalField(max_digits=10, blank=True, null=True, decimal_places=2)
     created_at = models.DateTimeField(default=timezone.now)
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='expenditure', blank=True, null=True)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='expenditures', blank=True, null=True)
 
     def __str__(self):
-        return f"{self.category} - {self.cost}"
+        return f"{self.category} - {self.total_cost}"
 
     class Meta:
         db_table = 'expenditure'
+
+
+class LeavePeriod(models.Model):
+    start_date = models.DateField(default=timezone.now)
+    end_date = models.DateField(default=timezone.now)
+    num_of_days = models.IntegerField(default=0)
+    days_allowed = models.IntegerField(default=0)
+    staff = models.ManyToManyField('staff.Staff', related_name='staff', blank='null')
+    created_at = models.DateTimeField(default=timezone.now)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='leave_periods', blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.start_date}-{self.end_date}"
+
+    class Meta:
+        db_table = 'leave_period'

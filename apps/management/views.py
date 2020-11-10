@@ -274,40 +274,51 @@ class AddMedicine(LoginRequiredMixin, RedirectView):
         name = request.POST.get('name')
         medicine_type = request.POST.get('medicine_type')
         boxes_bought = request.POST.get('boxes_bought')
-        pieces_per_box = request.POST.get('pieces_per_box')
+        no_in_box = request.POST.get('no_in_box')
         manufacturer = request.POST.get('manufacturer')
         manufacture_date = request.POST.get('manufacture_date')
         expiry_date = request.POST.get('expiry_date')
-        pieces_selling_price = request.POST.get('piece_selling_price')
-        pieces_cost_price = request.POST.get('piece_cost_price')
+        selling_price_per_unit = request.POST.get('selling_price_per_unit')
+        cost_price_per_box = request.POST.get('cost_price_per_box')
 
-        if Medicine.objects.get(name__iexact=name):
+        try:
             medicine = Medicine.objects.get(name__iexact=name)
-            medicine.boxes_bought += boxes_bought
-            medicine.boxes_left += boxes_bought
-            medicine.pieces_per_boxes += pieces_per_box
-            medicine.pieces += pieces_per_box * boxes_bought
-            medicine.pieces_left += pieces_per_box * boxes_bought
+            medicine.boxes_bought = int(boxes_bought)
+            medicine.boxes_left += int(boxes_bought)
+            medicine.no_in_box += int(no_in_box)
+            medicine.units_left += int(no_in_box) * int(boxes_bought)
+            medicine.total_no_units_accumulated= int(no_in_box) * int(boxes_bought)
+            medicine.total_no_boxes_accumulated += int(boxes_bought)
+            medicine.total_cost = int(cost_price_per_box)* int(boxes_bought)
+            medicine.total_cost_accumulated += int(cost_price_per_box)* int(boxes_bought)
 
             medicine.save()
-        else:
+        except Medicine.DoesNotExist:
             new_medicine = Medicine.objects.create(
                 name=name,
                 medicine_type=medicine_type,
+                manufacturer=manufacturer,
+                manufacture_date=manufacture_date,
+                expiry_date=expiry_date,
                 boxes_bought = boxes_bought,
+                total_no_boxes_accumulated = boxes_bought,
                 boxes_left = boxes_bought,
-                pieces_per_box = pieces_per_box,
-                pieces = pieces_per_box * boxes_bought,
-                pieces_left= pieces_per_box * boxes_bought,
-                manufacturer = manufacturer,
-                manufacture_date= manufacture_date,
-                expiry_date = expiry_date,
-                pieces_selling_price=pieces_selling_price,
+                no_in_box = no_in_box,
+                total_no_units_accumulated = int(no_in_box) * int(boxes_bought),
+                units_left= int(no_in_box) * int(boxes_bought),
+                selling_price_per_unit=selling_price_per_unit,
+                cost_price_per_box=cost_price_per_box,
+                cost_price_per_unit= int(cost_price_per_box) / int(no_in_box),
+                selling_price_per_box= int(selling_price_per_unit) * int(no_in_box),
+                total_cost= int(cost_price_per_box) * int(boxes_bought),
+                total_cost_accumulated = int(cost_price_per_box) * int(boxes_bought),
                 created_by=self.request.user,
             )
 
-        new exp = Expenditure.objects.create(
-            category= Medicine,
+        new_exp = Expenditure.objects.create(
+            category= 'Medicine',
             item=name,
-            cost= pieces_cost_price
+            total_cost= int(cost_price_per_box) * int(boxes_bought),
+            created_by=self.request.user,
         )
+        return super(AddMedicine, self).post(self, request, *args, **kwargs)
