@@ -1,0 +1,35 @@
+{% extends 'layout/staff_layout.html' %}
+{% load bootstrap4 %}
+{% load humanize %}
+{% block leave %}
+    active
+{%endblock  %}
+{% block title %}
+    Leave
+{% endblock %}
+{% block css %}
+    <style>
+        .container_com {
+            height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+{% endblock %}
+{% block  page_title %}
+    Leave
+{% endblock %}
+{% block content %}
+    <div class="mt-3">
+        <form action="" method="post">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-6">
+                    {% bootstrap_form form %}
+                    <div class="mt-3">
+                        <button type="submit" class="btn btn-info btn-block mt-2">Submit</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock %}

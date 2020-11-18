@@ -1,0 +1,85 @@
+{% extends 'layout/admin_layout.html' %}
+{% load humanize %}
+{% block page_title %}
+    {{ object.start_date }} - {{ object.end_date }}
+{% endblock %}
+{% block title %}
+    Human Resource
+{% endblock %}
+{% block hr %}active{% endblock %}
+{% block content %}
+    <div class="mt-3">
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <a class="nav-link active" id="home-tab" data-toggle="tab" href="#staff" role="tab" aria-controls="leave" aria-selected="true">Staff</a>
+            </li>
+            <li class="nav-item" role="presentation">
+                <a class="nav-link" id="profile-tab" data-toggle="tab" href="#leave" role="tab" aria-controls="leave" aria-selected="false">All leave requests</a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="staff" role="tabpanel" aria-labelledby="staff-tab">
+            <div class="table-responsive mt-5">
+                <table class="table table-bothered" id="dataTable">
+                    <thead>
+                    <tr>
+                        <th>Staff Name</th>
+                        <th>Number Of Days Allowed</th>
+                        <th>Number Of Days Used</th>
+                        <th>Number Of Days Left</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for foo in object.staffs.all %}
+                        <tr>
+                            <td>{{ foo.user.full_name }}</td>
+                            <td>{{ foo.total_days }}</td>
+                            <td>{{ foo.no_days_used }}</td>
+                            <td>{{ foo.no_days_left }}</td>
+                            <td>
+                                <a href="" class="btn btn-sm btn-danger"><i class="fa fa-list"></i></a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="leave" role="tabpanel" aria-labelledby="leave-tab">
+            <div class="row mt-3">
+                <div class="col-6">
+                    <div class="list-group">
+                        {% for leave in leaves %}
+                            <div class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h5 class="mb-1">start date: {{ leave.start_date }} - end date: {{ leave.end_date }}</h5>
+                                    <small></small>
+                                    <small></small>
+                                </div>
+                                <div class="row">
+                                    <div class="col-10">
+                                        <p class="mb-1">Purpose: {{ leave.purpose }}</p>
+                                    </div>
+                                    <div class="col-2">
+                                        {% if leave.status == 'Pending' %}
+                                        <a href="{% url "management:change_leave_status" leave_id=leave.id status='Approved' lp_id=object.id %}" class="btn btn-sm btn-primary"><i class="fa fa-check text-white"></i></a>
+                                        <a href="{% url "management:change_leave_status" leave_id=leave.id status='Rejected' lp_id=object.id %}" class="btn btn-sm btn-danger"><i class="fa fa-ban text-white"></i></a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col"><small>Requested by: {{ leave.created_by.full_name }}</small></div>
+                                    <div class="col"><small>Request Date - {{ leave.created_at.date }}</small></div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

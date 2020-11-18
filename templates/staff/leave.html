@@ -1,0 +1,78 @@
+{% extends 'layout/staff_layout.html' %}
+{% load humanize %}
+{% block leave %}
+    active
+{%endblock  %}
+{% block css %}
+    <style>
+        .container_com {
+            height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+{% endblock %}
+{% block title %}
+    Leave
+{% endblock %}
+{% block btn %}
+    <a href="{% url 'staff:leave-new' %}" class="btn btn-sm btn-info">Make Request</a>
+{% endblock %}
+{% block  page_title %}
+    {{ leave_year.user.full_name }}
+{% endblock %}
+{% block content %}
+    <nav class="navbar navbar-dark bg-info">
+        <div class="col text-white">Total Days: {{ leave_year.total_days }}</div>
+        <div class="col text-white">Days used: {{ leave_year.no_days_used }}</div>
+        <div class="col text-white">Days Left: {{ leave_year.no_days_left }}</div>
+    </nav>
+    <div class="mt-3">
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Leaves for the year</a>
+            </li>
+            <li class="nav-item" role="presentation">
+                <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">All leave requests</a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+            <div class="row mt-3">
+                <div class="col-6">
+                    <div class="list-group">
+                        {% for leave in leave_year.leaves.all %}
+                         <a href="#" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">start date{{ leave.start_date}} - end date{{ leave.end_date }} - ({{ leave.num_of_days }} days)</h5>
+                                <small></small>
+                            </div>
+                            <p class="mb-1">{{ leave.purpose }}</p>
+                            <small>Request Date - {{ leave.created_at | naturalday }}</small>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+            <div class="row mt-3">
+                <div class="col-6">
+                    <div class="list-group">
+                        {% for leave in leaves %}
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">start date: {{ leave.start_date }} - end date: {{ leave.end_date }}</h5>
+                                <small></small>
+                            </div>
+                            <p class="mb-1">{{ leave.purpose }}</p>
+                            <small>Request Date - {{ leave.created_at | naturalday }}</small>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

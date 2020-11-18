@@ -10,5 +10,6 @@ urlpatterns = [
     path('bill/pay/confirm/<uuid>/<patient_id>/', ConfirmPayment.as_view(), name='confirm-payment'),
     path('patient/card/<id>/', PatientCard.as_view(), name='patient-card'),
     path('patient/discharge/confirm/<uuid>/', ConfirmDischarge.as_view(), name='confirm-discharge'),
-    path('bill/<uuid>/', bill_details, name='bill-details')
+    path('bill/<uuid>/', bill_details, name='bill-details'),
+    path('bill/prescription/confirm/<uuid>/', ConfirmPrescriptionBill.as_view(), name='confirm-prescription'),
 ]

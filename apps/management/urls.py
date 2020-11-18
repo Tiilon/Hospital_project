@@ -19,8 +19,12 @@ urlpatterns =[
     path('hr/complaint/details/<id>/', complaint_details, name='complaint_details'),
     path('hr/respond/<id>/', response, name = 'response'),
     path('request/add/', MakeRequest.as_view(), name='request-add'),
-    path('request/', Requests.as_view(), name= 'requests'),
+    path('request/', Requests.as_view(), name='requests'),
     path('request/<request_id>/', ChangeRequestStatus.as_view(), name= 'change-request-status'),
     path('expenditure/', Expenditures.as_view(), name='expenditures'),
     path('medicine/add/', AddMedicine.as_view(), name = 'medicine-add'),
+    path('new/leave/period/', NewLeavePeriod.as_view(),name ='new-leave-period'),
+    path('leave/period/details<id>/', LeavePeriodDetails.as_view(), name='leave-details'),
+    path('change/status/<leave_id>/<status>/<lp_id>/', change_leave_status, name='change_leave_status'),
+    path('revenue/list/', revenues, name='revenue-list')
 ]

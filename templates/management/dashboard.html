@@ -1,4 +1,5 @@
 {% extends 'layout/admin_layout.html' %}
+{% load humanize %}
 {% block title %}
     Dashboard
 {% endblock %}
@@ -8,6 +9,205 @@
 {% block dash %}
     active
 {% endblock %}
+{% block btn %}
+<div>
+    <select class="custom-select" name="year" id="">
+        <option value="">--------</option>
+        {% for year in years %}
+        <option value="{{ year.0}}"{% if current_year == year.0 %}selected{% endif %}>{{ year.1 }}</option>
+        {% endfor %}
+    </select>
+</div>
+{% endblock %}
 {% block content %}
-put dashboard here
+    <div class="row">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-danger shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Wards</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ wards }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-hospital fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer small">
+                    Beds: {{ beds }}
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-danger shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Expenditure</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">GHS {{ expenditure | intcomma }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-money-bill fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-danger shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Revenue</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">GHS {{ revenue | intcomma }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-money-check fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-danger shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Staff</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ staff }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-user-cog fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer small">
+                    <div class="row">
+                        <div class="col">Active - {{ active }}</div>
+                        <div class="col">Inactive - {{ inactive }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6">
+            <div class="card">
+                <div class="card-header border-0">Finances</div>
+                <div class="card-body">
+                    <div class="chart-area">
+                        <canvas id="finance"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block js %}
+    <script>
+        var ctx = document.getElementById('finance');
+        var myLineChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'],
+                datasets: [
+                    {
+                        label: 'Revenue',
+                        lineTension: 0.3,
+                        backgroundColor: "rgba(0,0,0,0.1)",
+                        fill: false,
+                        borderColor: "rgba(240,52,52,1)",
+                        pointRadius: 3,
+                        pointBackgroundColor: "rgba(240,52,52,1)",
+                        pointBorderColor: "rgba(240,52,52,1)",
+                        pointHoverRadius: 3,
+                        pointHoverBackgroundColor: "rgba(240,52,52,1)",
+                        pointHoverBorderColor: "rgba(240,52,52,1)",
+                        pointHitRadius: 10,
+                        pointBorderWidth: 2,
+                        data:[1,2,3,4,5,6,7,8,9,10,11,12]
+                    },
+                    {
+                        label: 'Expenditure',
+                        lineTension: 0.3,
+                        backgroundColor: "rgba(0,0,0,0.1)",
+                        fill: false,
+                        borderColor: "rgba(255,255,0)",
+                        pointRadius: 3,
+                        pointBackgroundColor: "rgba(255,255,0)",
+                        pointBorderColor: "rgba(255,255,0)",
+                        pointHoverRadius: 3,
+                        pointHoverBackgroundColor: "rgba(255,255,0)",
+                        pointHoverBorderColor: "rgba(255,255,0)",
+                        pointHitRadius: 10,
+                        pointBorderWidth: 2,
+                        data:[2,4,6,8,10,12,14,16,18,20,22,24]
+                    },
+                ],
+            },
+            options: {
+                maintainAspectRatio: false,
+                layout: {
+                    padding: {
+                        left: 10,
+                        right: 25,
+                        top: 25,
+                        bottom: 0
+                    }
+                },
+                scales: {
+                    xAxes: [{
+                        time:{
+                            unit: 'date'
+                        },
+                        gridLines: {
+                            display: false,
+                            drawBorder: false
+                        },
+                    }],
+                    yAxes: [{
+
+                        ticks: {
+                            maxTicksLimit: 10,
+                            padding: 10,
+                            callback: function (value, index, values) {
+                                return value;
+                            }
+                        },
+                        gridLines: {
+                            color: "rgb(234,236,244)",
+                            zeroLineColor: "rbg(234,236,244)",
+                            drawBorder: true,
+                            borderDash: [2],
+                            zeroLineBorderDash: [2]
+                        }
+                    }],
+                },
+                legend: {
+                    display: true
+                },
+                tooltips: {
+                    backgroundColor: "rga(255,255,255,255)",
+                    bodyFontColor: "#858796",
+                    titleMarginBottom: 10,
+                    titleFontColor: 14,
+                    borderColor: "#dddfeb",
+                    borderWidth:1,
+                    xPadding:15,
+                    yPadding:15,
+                    displayColors:false,
+                    intersect: false,
+                    mode:'index',
+                    caretPadding:10,
+                    callbacks:{
+                        label: function (tooltipItem, chart) {
+                            var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
+                            return datasetLabel + ':' + tooltipItem.yLabel;
+                        }
+                    }
+                }
+            }
+        })
+    </script>
 {% endblock %}

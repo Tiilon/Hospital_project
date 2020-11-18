@@ -25,8 +25,8 @@ class UserManager(BaseUserManager):
         user = self.create_user(staff_id=staff_id, first_name=first_name, last_name= last_name, password= password)
 
         user.is_superuser = True
-        user.is_active =True
-        user.is_staff= True
+        user.is_active = True
+        user.is_staff = True
         user.username= staff_id
         user.save(using=self._db)
 
@@ -39,6 +39,7 @@ USER_STATUS = {
     ('Suspended', 'Suspended'),
     ('Dismissed', 'Dismissed'),
 }
+
 
 USERTYPE = {
     ('MU', 'Manager'),

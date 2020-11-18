@@ -20,6 +20,7 @@ class Staff(models.Model):
 
     class Meta:
         db_table = 'staff'
+        get_latest_by = 'created_at'
 
 
 LEAVE_STATUS = {
@@ -31,8 +32,9 @@ LEAVE_STATUS = {
 
 class Leave(models.Model):
     staff = models.ForeignKey(Staff, on_delete=models.SET_NULL, related_name='leave_staff', blank='null', null=True)
-    start_date = models.DateField(default=timezone.now)
-    end_date = models.DateField(default=timezone.now)
+    start_date = models.DateField(blank=True, null=True)
+    end_date = models.DateField(blank=True, null=True)
+    purpose = models.CharField(max_length=300, blank=True, null=True)
     num_of_days = models.IntegerField(default=0)
     status = models.CharField(max_length=100, null=True, blank=True, choices=LEAVE_STATUS)
     created_at = models.DateTimeField(default=timezone.now)

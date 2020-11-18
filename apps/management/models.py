@@ -8,7 +8,6 @@ from django.utils import timezone
 # Create your models here.
 
 
-
 class Ward(models.Model):
     label = models.CharField(max_length=100, blank=True, null=True)
     incharge = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='ward_incharge', blank=True, null=True)
@@ -23,10 +22,12 @@ class Ward(models.Model):
     class meta:
         db_table= 'ward'
 
+
 BED_STATUS = {
     ('Assigned', 'Assigned'),
     ('Unassigned', 'Unassigned')
 }
+
 
 class Bed(models.Model):
     number = models.CharField(max_length=200, blank=True, null=True)
@@ -71,12 +72,13 @@ def generate():
 
     return f"PT{pat_id}/{timezone.now().year}"
 
-GENDER={
-    ('Male','Male'),
+
+GENDER = {
+    ('Male', 'Male'),
     ('Female', 'Female'),
 }
 
-PATIENT_TYPE={
+PATIENT_TYPE = {
     ('OPD', 'OPD'),
     ('Ward', 'Ward'),
     ('ER', 'EMERGENCY'),
@@ -87,7 +89,7 @@ PATIENT_TYPE={
 MARITAL = {
     ('Married', 'Married'),
     ('Single', 'Single'),
-    ('Divorced', 'Divoreced'),
+    ('Divorced', 'Divorced'),
     ('Widowed', 'Widowed'),
 }
 
@@ -97,7 +99,7 @@ class Patient(models.Model):
     first_name = models.CharField(max_length=100, blank=True, null=True)
     last_name = models.CharField(max_length=100, blank=True, null=True)
     patient_type = models.CharField(max_length=100, blank=True, null=True, choices=PATIENT_TYPE)
-    gender = models.CharField(max_length=100, blank=True, null=True, choices= GENDER)
+    gender = models.CharField(max_length=100, blank=True, null=True, choices=GENDER)
     marital_status = models.CharField(max_length=100,blank=True,null=True,choices=MARITAL)
     date_of_birth = models.DateField(blank=True, null=True)
     date_admitted = models.DateField(blank=True, null=True)
@@ -142,7 +144,6 @@ class MedicalDiagnosis(models.Model):
     class Meta:
         db_table= 'medical diagnosis'
         ordering = ('-created_at',)
-
 
 
 TREATMENT_STATUS = {
@@ -244,11 +245,11 @@ class Expenditure(models.Model):
 
 
 class LeavePeriod(models.Model):
-    start_date = models.DateField(default=timezone.now)
-    end_date = models.DateField(default=timezone.now)
+    start_date = models.DateField(blank=True, null=True)
+    end_date = models.DateField(blank=True, null=True)
     num_of_days = models.IntegerField(default=0)
     days_allowed = models.IntegerField(default=0)
-    staff = models.ManyToManyField('staff.Staff', related_name='staff', blank='null')
+    staffs = models.ManyToManyField('staff.Staff', related_name='staff', blank='null')
     created_at = models.DateTimeField(default=timezone.now)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='leave_periods', blank=True, null=True)
 
@@ -257,3 +258,39 @@ class LeavePeriod(models.Model):
 
     class Meta:
         db_table = 'leave_period'
+
+
+STREAMS = {
+    ('Government', 'Government'),
+    ('Patient', 'Patient'),
+    ('Donation', 'Donation')
+}
+
+
+class Revenue(models.Model):
+    stream = models.CharField(max_length=200, blank=True, null=True, choices=STREAMS)
+    bill = models.ForeignKey('portal.Bill', related_name='revenue_bill', on_delete=models.SET_NULL, blank=True, null=True)
+    patient = models.ForeignKey(Patient, on_delete=models.SET_NULL, related_name='revenue_patient', blank=True, null=True)
+    description = models.CharField(max_length=100, blank=True, null=True)
+    amount = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    created_at = models.DateTimeField(blank=True, null=True)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, blank=True, null=True, related_name='revenues')
+
+    def __str__(self):
+        return str(self.stream)
+
+    class Meta:
+        db_table = 'revenue'
+        ordering = ('-created_at',)
+
+
+A_STATUS = {
+    ('Show', 'Show'),
+    ('Hide', 'Hide')
+}
+
+
+class Announcement(models.Model):
+    message = models.CharField(max_length=200, blank=True, null=True)
+    title = models.CharField(max_length=200, blank=True, null=True)
+    status = models.CharField(max_length=200, blank=True, null=True, choices=A_STATUS)

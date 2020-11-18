@@ -8,14 +8,54 @@ from apps.management.forms import UserForm
 from apps.pharmacy.models import Medicine
 from apps.portal.models import DefaultBills
 from apps.staff.forms import ComplaintForm
+from apps.staff.models import Staff, Leave
 from apps.user.models import User
 from .models import *
+from .forms import *
 from apps.management import models
 
 
 @login_required()
 def dashboard(request):
-    return render(request=request, template_name='management/dashboard.html')
+    wards = Ward.objects.count()
+    beds = Bed.objects.count()
+    exp = Expenditure.objects.all()
+    total_exp = 0
+
+    for exp in exp:
+        total_exp += exp.total_cost
+
+    revenue = Revenue.objects.all()
+    total_rev = 0
+
+    for rev in revenue:
+        total_rev += rev.amount
+
+
+    current_year = timezone.now().year
+    years = []
+
+    for year in range(51):
+        years.append((current_year + year, current_year+year))
+
+
+    staff = User.objects.count()
+
+    active_staff = User.objects.filter(status='Active').count()
+    inactive_staff = User.objects.exclude(status='Active').count()
+
+    context = {
+        'wards':wards,
+        'beds':beds,
+        'expenditure': total_exp,
+        'staff':staff,
+        'active':active_staff,
+        'inactive':inactive_staff,
+        'revenue':total_rev,
+        'years': years,
+        'current_year': current_year,
+    }
+    return render(request=request, template_name='management/dashboard.html',context=context)
 
 @login_required()
 def staff_list(request):
@@ -41,6 +81,8 @@ class AddStaff(LoginRequiredMixin, CreateView):
         form.save()
 
         return valid
+
+
 class StaffDetails(LoginRequiredMixin, DetailView):
     template_name = 'management/staff_details.html'
     model = User
@@ -159,11 +201,13 @@ class UpdateBill(LoginRequiredMixin, RedirectView):
 def hr_view(request):
     complaints= Complaints.objects.all().exclude(status='Canceled').exclude(status='Resolved')
     com = Complaints.objects.filter(status='Resolved')
+    leave_periods = LeavePeriod.objects.all()
 
 
     context = {
         'complaints':complaints,
-        'com':com
+        'com':com,
+        'leave_periods': leave_periods
     }
 
     return render(request, 'management/hr.html', context)
@@ -262,10 +306,12 @@ class ChangeRequestStatus(LoginRequiredMixin, RedirectView):
 
         return super(ChangeRequestStatus, self).post(self, request, *args, **kwargs)
 
+
 class Expenditures(LoginRequiredMixin, ListView):
     template_name = 'management/expenditure.html'
     queryset = Expenditure.objects.all()
     model = Expenditure
+
 
 class AddMedicine(LoginRequiredMixin, RedirectView):
     url = reverse_lazy('management:expenditures')
@@ -322,3 +368,103 @@ class AddMedicine(LoginRequiredMixin, RedirectView):
             created_by=self.request.user,
         )
         return super(AddMedicine, self).post(self, request, *args, **kwargs)
+
+
+class NewLeavePeriod(LoginRequiredMixin, CreateView):
+    template_name = 'management/leave_period_new.html'
+    success_url = reverse_lazy('management:hr_view')
+    form_class = LeavePeriodForm
+    queryset = LeavePeriod.objects.all()
+
+    def form_valid(self, form):
+        valid = super(NewLeavePeriod, self).form_valid(form)
+
+        # get number of days
+        nod = (form.instance.end_date - form.instance.start_date).days
+        form.instance.num_of_days = nod
+
+        # get all user objects
+        users = User.objects.all()
+        # convert end_date to a datetime type without the time data
+        # Import datetime at the top
+        # date1 = datetime.datetime.strptime(form.instance.end_date, "%Y-%m-%d")
+
+        # leave_period = LeavePeriod.objects.get(end_date__year=date1.year)
+        # looping through all the users
+        for user in users:
+            # initiate leave days left
+            days_left = 0
+            try:
+                # try to get the latest staff object by excluding this new leave period
+                # Add get_latest_by to the class Meta of the Staff model
+                latest = Staff.objects.filter(user=user).exclude(leave_period=form.instance).latest()
+                # use the latest to get the remaining days of the staff
+                days_left = latest.no_days_left
+            except Staff.DoesNotExist:
+                pass
+            # create the staff with the user iterator
+            staff = Staff.objects.create(
+                user=user,
+                leave_period=form.instance,
+                created_by=self.request.user,
+                total_days= days_left + int(form.instance.days_allowed),
+                no_days_left= days_left + int(form.instance.days_allowed),
+            )
+
+            staff.save()
+            # add the staff instance to the leave period staffs m2m field
+            form.instance.staffs.add(staff)
+        form.instance.created_by = self.request.user
+        form.save()
+
+        return valid
+
+
+class LeavePeriodDetails(LoginRequiredMixin, DetailView):
+    template_name = 'management/leave_period_details.html'
+    pk_url_kwarg = 'id'
+    model = LeavePeriod
+    queryset = LeavePeriod.objects.all()
+
+    def get_context_data(self, **kwargs):
+        context = super(LeavePeriodDetails, self).get_context_data(**kwargs)
+        context['leaves'] = Leave.objects.all()
+
+        return context
+
+
+def change_leave_status(request,status,leave_id, lp_id):
+    leave = Leave.objects.get(id=leave_id)
+
+    if leave.status == 'Pending':
+        if status == 'Approved':
+            leave.status = 'Approved'
+        else:
+            leave.status = 'Rejected'
+        leave.save()
+    return redirect(reverse_lazy('management:leave-details', kwargs = {'id':lp_id}))
+
+
+# class RevenueList(LoginRequiredMixin, ListView):
+#     model = Revenue
+#     queryset = Revenue.objects.all()
+#     template_name = 'management/revenue_list.html'
+
+
+def revenues(request):
+    revenue = Revenue.objects.all()
+    form = RevenueForm
+
+    context = {
+        'revenue': revenue,
+        'form': form
+    }
+
+    if request.method == "POST":
+        form = RevenueForm(request.POST)
+        if form.is_valid():
+            form.instance.created_by = request.user
+            form.instance.created_at = timezone.now()
+            form.save()
+
+    return render(request, 'management/revenue_list.html', context)

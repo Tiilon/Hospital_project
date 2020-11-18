@@ -6,11 +6,14 @@
     Human Resource
 {% endblock %}
 {% block hr %}active{% endblock %}
+{% block btn %}
+    <a href="{% url 'management:new-leave-period' %}" class="btn btn-sm btn-danger"><i class="fa fa-plus"></i> Add New Leave Period</a>
+{% endblock %}
 {% block content %}
     <div class="card">
         <div class="card-header">
             <ul class="nav nav-tabs card-header-tabs" id="myTab" role="tablist">
-                <li class="nav-item"><a href="#complaints" data-toggle="tab" role="tab" aria-controls="complaints" aria-selected="false" class="nav-link active" id="complaints-tab">Complaints</a></li>
+                <li class="nav-item"><a href="#complaints" data-toggle="tab" role="tab" aria-controls="complaints" aria-selected="false" class="nav-link" id="complaints-tab">Complaints</a></li>
                 <li class="nav-item"><a href="#leave" data-toggle="tab" role="tab" aria-controls="leave" aria-selected="false" class="nav-link " id="leave-tab">Leave</a></li>
             </ul>
         </div>
@@ -25,24 +28,24 @@
                             <div class="card-body">
                                 <div id="accordion">
                                     {% for complaint in complaints %}
-                                            <div class="card">
-                                                <div class="card-header" id="headingOne">
-                                                    <h5 class="mb-0">
-                                                        <button class="btn btn" data-toggle="collapse" data-target="#collapseOne{{ complaint.id }}" aria-expanded="true" aria-controls="collapseOne">
-                                                            {{ complaint.created_by.full_name }} - {{ complaint.created_at }}
-                                                        </button>
-                                                    </h5>
-                                                </div>
-                                                <div id="collapseOne{{ complaint.id }}" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
-                                                    <div class="card-body">
-                                                        {{ complaint.complaints }}
-                                                        <form method="POST" action="{% url 'management:complaint_details' complaint.id%}">
-                                                            {% csrf_token %}
-                                                            <button type="submit" class="btn btn-sm btn-primary float-right">Respond</button>
-                                                        </form>
-                                                    </div>
+                                        <div class="card">
+                                            <div class="card-header" id="headingOne">
+                                                <h5 class="mb-0">
+                                                    <button class="btn btn" data-toggle="collapse" data-target="#collapseOne{{ complaint.id }}" aria-expanded="true" aria-controls="collapseOne">
+                                                        {{ complaint.created_by.full_name }} - {{ complaint.created_at }}
+                                                    </button>
+                                                </h5>
+                                            </div>
+                                            <div id="collapseOne{{ complaint.id }}" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+                                                <div class="card-body">
+                                                    {{ complaint.complaints }}
+                                                    <form method="POST" action="{% url 'management:complaint_details' complaint.id%}">
+                                                        {% csrf_token %}
+                                                        <button type="submit" class="btn btn-sm btn-primary float-right">Respond</button>
+                                                    </form>
                                                 </div>
                                             </div>
+                                        </div>
                                     {% endfor %}
                                 </div>
                             </div>
@@ -81,18 +84,23 @@
                     </div>
                 </div>
                 <div class="tab-pane fade " id="leave" role="tabpanel" aria-labelledby="leave-tab">
-                    <div class="row">
-                        <div class="col-4 mb-2">
+                    <div class="list-group col-6">
+                        {% for leave_period in leave_periods %}
                             <div class="list-group-item list-group-item-column align-items-start">
-                                <div class="row">
-                                    <div class="col-10">
-                                        <div class="d-flex w-100 justify-content-between">
-                                            <h5>yyyhhhhh</h5>
+{#                                <div class="col-10">#}
+                                    <div class="row">
+                                        <div class="col-10">
+                                            <h4>Start Date: {{ leave_period.start_date }}---End Date: {{ leave_period.end_date }}</h4>
+                                            <span>Days Allowed: {{ leave_period.days_allowed }}</span>
                                         </div>
+                                        <a href="{% url 'management:leave-details' leave_period.id %}">
+                                        <div class="col-2"><button class="btn btn-md btn-success"><i class="fa fa-list"></i></button></div>
+                                        </a>
+
                                     </div>
-                                </div>
+{#                                </div>#}
                             </div>
-                        </div>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
