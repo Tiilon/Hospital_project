@@ -130,7 +130,7 @@ def vital_sign_chart(request, id):
     day = today.day
     month = today.month
     year = today.year
-    patient_vs_today = patient.vital_signs.filter(created_at__day=day, created_at__month=month, created_at__year=year)
+    patient_vs_today = patient.vital_signs.filter(created_at__day=day, created_at__month=month, created_at__year=year).order_by('time')
 
     labels = [str(x.time.strftime('%H:%M')) for x in patient_vs_today.all()]
     temp_data = [str(x.temperature) for x in patient_vs_today.all()]

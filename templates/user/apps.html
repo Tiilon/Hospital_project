@@ -11,82 +11,89 @@
 {% block content %}
     <div class="container">
         <div class="row">
-            <div class="col">
-                <a href="{% url 'portal:portal_layout' %}" class="card card-link border-left-primary raise">
-                    <div class="card-body">
-                        <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="h4 font-weight-bold text-primary">Portal</div>
-                            </div>
-                            <div class="col-auto">
-                                <i class="fas fa-2x fa-folder-open"></i>
+            {% if user.user_type == 'NU' and user.role == 'CH' %}
+                <div class="col">
+                    <a href="{% url 'portal:portal_layout' %}" class="card card-link border-left-primary raise">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="h4 font-weight-bold text-primary">Portal</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-2x fa-folder-open"></i>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </a>
-            </div>
+                    </a>
+                </div>
+            {% endif %}
             <div class="col">
                 <a href="{% url 'staff:dashboard' %}">
-                   <div class="card border-left-primary raise card-link">
-                    <div class="card-body">
-                         <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="h4 font-weight-bold text-primary">Staff</div>
-                            </div>
-                            <div class="col-auto">
-                                <i class="fas fa-2x fa-users"></i>
+                    <div class="card border-left-primary raise card-link">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="h4 font-weight-bold text-primary">Staff</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-2x fa-users"></i>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
                 </a>
-
             </div>
-            <div class="col">
-                <a href="{% url 'department:dashboard' %}" class="card-link card border-left-primary raise">
-                    <div class="card-body">
-                         <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="h4 font-weight-bold text-primary">Departments</div>
+            {% if user.user_type == 'NU' and not user.role == 'CH' and not user.role == 'PHM' %}
+                <div class="col">
+                    <a href="{% url 'department:dashboard' %}" class="card-link card border-left-primary raise">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="h4 font-weight-bold text-primary">Departments</div>
+                                </div>
+                                <i class="fas fa-2x fa-building"></i>
                             </div>
-                             <i class="fas fa-2x fa-building"></i>
-                         </div>
-                    </div>
-                </a>
-            </div>
+                        </div>
+                    </a>
+                </div>
+            {% endif %}
         </div>
         <div class="row mt-3">
-            <div class="col">
-                <a href="{% url 'pharmacy:dashboard' %}">
-                <div class="card border-left-primary raise card-link">
-                    <div class="card-body">
-                         <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="h4 font-weight-bold text-primary">Pharmacy</div>
-                            </div>
-                            <div class="col-auto">
-                                <i class="fas fa-2x fa-plus-square"></i>
+            {% if user.user_type == 'NU' and user.role == 'PHM' %}
+                <div class="col">
+                    <a href="{% url 'pharmacy:dashboard' %}">
+                        <div class="card border-left-primary raise card-link">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="h4 font-weight-bold text-primary">Pharmacy</div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-2x fa-plus-square"></i>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
-                </a>
-
-            </div>
-            <div class="col">
-                <a href="{% url 'management:dashboard' %}" class="card-link card border-left-danger raise">
-                    <div class="card-body">
-                         <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="h4 font-weight-bold text-primary">Administration</div>
-                            </div>
-                            <div class="col-auto">
-                                <i class="fas fa-2x fa-sitemap"></i>
+            {% endif %}
+            {% if user.user_type == 'SU' or user.user_type == 'AD' %}
+                <div class="col">
+                    <a href="{% url 'management:dashboard' %}" class="card-link card border-left-danger raise">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="h4 font-weight-bold text-primary">Administration</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-2x fa-sitemap"></i>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </a>
-            </div>
+                    </a>
+                </div>
+            {% endif %}
+
         </div>
     </div>
 {% endblock %}
