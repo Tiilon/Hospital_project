@@ -8,8 +8,11 @@
 {% block page_title %}
     {{ object.full_name }}
 {% endblock %}
+{% block btn %}
+    <button onclick="printDiv('id_card')" class="btn btn-sm btn-info">Print <i class="fa fa-print"></i></button>
+{% endblock %}
 {% block content %}
- <div class="row">
+    <div class="row" id="id_card">
         <div class="col-4">
             <div class="card border-dark">
                 <div class="card-body">
@@ -23,4 +26,18 @@
             </div>
         </div>
     </div>
+{% endblock %}
+{% block js %}
+    <script>
+        function printDiv(divName) {
+            var printContents = document.getElementById(divName).innerHTML;
+            var originalContents = document.body.innerHTML;
+
+            document.body.innerHTML = printContents;
+
+            window.print();
+
+            document.body.innerHTML = originalContents;
+        }
+    </script>
 {% endblock %}

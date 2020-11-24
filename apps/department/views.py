@@ -1,3 +1,5 @@
+import json
+
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
 from django.http import HttpResponseRedirect
@@ -6,11 +8,12 @@ from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import *
 from django.contrib.auth.mixins import LoginRequiredMixin
-
+import datetime
+from datetime import timedelta
 from apps.portal.models import Bill, DefaultBills
 from . import forms
 from .models import *
-from apps.management.models import Patient, MedicalDiagnosis, Treatment, Ward, Bed, BedAllocate
+from apps.management.models import Patient, MedicalDiagnosis, Treatment, Ward, Bed, BedAllocate, VitalSign
 
 
 @login_required()
@@ -68,14 +71,22 @@ def vital_sign(request, id):
     dias = request.POST.get('dias')
     respiration = request.POST.get('respiration')
     temperature = request.POST.get('temperature')
+    pulse = request.POST.get('pulse')
 
     bp = f"{sys}/{dias}"
-
-    patient.weight = weight + 'kg'
-    patient.bp = bp + 'mmHg'
-    patient.respiration = respiration + 'cpm'
-    patient.temperature = temperature + '°C'
-    patient.patient_type = 'OPD'
+    if request.method == 'POST':
+        nvs = VitalSign.objects.create(
+            patient=patient,
+            diastolic=dias,
+            systolic=sys,
+            weight=weight,
+            respiration=respiration,
+            temperature=temperature,
+            created_by=request.user,
+            created_at=timezone.now(),
+            pulse= pulse,
+        )
+        patient.vital_signs.add(nvs)
 
     patient.save()
 
@@ -105,6 +116,52 @@ class VitalSigns(LoginRequiredMixin, RedirectView):
 
         patient.save()
         return super(VitalSigns, self).post(self,request,*args,**kwargs)
+
+@login_required()
+def vital_sign_chart(request, id):
+    patient = Patient.objects.get(id=id)
+
+    today = datetime.datetime.strptime(request.GET.get('today'), '%d-%m-%Y') if request.GET.get('today') else timezone.now().date()
+    ndate = today + timedelta(days=1)
+    pdate = today - timedelta(days=1)
+
+    ndate = datetime.datetime.strftime(ndate, '%d-%m-%Y')
+    pdate = datetime.datetime.strftime(pdate, '%d-%m-%Y')
+    day = today.day
+    month = today.month
+    year = today.year
+    patient_vs_today = patient.vital_signs.filter(created_at__day=day, created_at__month=month, created_at__year=year)
+
+    labels = [str(x.time.strftime('%H:%M')) for x in patient_vs_today.all()]
+    temp_data = [str(x.temperature) for x in patient_vs_today.all()]
+
+    res_data = [str(x.respiration) for x in patient_vs_today.all()]
+
+    # alternative way
+
+    pulse_data =[]
+    for x in patient_vs_today.all():
+        pulse_data.append(str(x.pulse))
+
+    dias_data = [str(x.diastolic) for x in patient_vs_today.all()]
+
+    sys_data = [str(x.systolic) for x in patient_vs_today.all()]
+
+    context = {
+        'object': patient,
+        'pdate': pdate,
+        'ndate':ndate,
+        'vital_signs': patient_vs_today,
+        'labels': json.dumps(labels),
+        'dias': json.dumps(dias_data),
+        'sys': json.dumps(sys_data),
+        'temp': json.dumps(temp_data),
+        'res': json.dumps(res_data),
+        'pulse': json.dumps(pulse_data),
+        'today': today
+    }
+
+    return render(request, 'department/vital_signs.html', context)
 
 
 class OPDPatients(LoginRequiredMixin, ListView):

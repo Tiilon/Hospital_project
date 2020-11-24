@@ -18,5 +18,6 @@ urlpatterns =[
     path('wards/', Wards.as_view(), name='wards'),
     path('ward/<id>', ward_details, name='ward-details'),
     path('ward/bed/allocate/<bed_id>/', allocate_bed, name='bed-allocate'),
-    path('patient/discharge/<id>/', DischargePatient.as_view(), name ='patient-discharge')
+    path('patient/discharge/<id>/', DischargePatient.as_view(), name ='patient-discharge'),
+    path('patient/vital-sign/<id>', vital_sign_chart, name='patient-vital-signs'),
 ]

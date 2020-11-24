@@ -19,30 +19,220 @@ from apps.management import models
 def dashboard(request):
     wards = Ward.objects.count()
     beds = Bed.objects.count()
-    exp = Expenditure.objects.all()
-    total_exp = 0
 
-    for exp in exp:
-        total_exp += exp.total_cost
-
-    revenue = Revenue.objects.all()
-    total_rev = 0
-
-    for rev in revenue:
-        total_rev += rev.amount
-
-
-    current_year = timezone.now().year
+    current_year = 2020
     years = []
 
     for year in range(51):
         years.append((current_year + year, current_year+year))
 
-
     staff = User.objects.count()
 
     active_staff = User.objects.filter(status='Active').count()
     inactive_staff = User.objects.exclude(status='Active').count()
+
+    year = int(request.GET.get('year')) if request.GET.get('year') else current_year
+
+    exps = Expenditure.objects.filter(created_at__year=year)
+    total_exp = 0
+
+    for exp in exps:
+        total_exp += exp.total_cost
+
+    revenues = Revenue.objects.filter(created_at__year=year)
+    total_rev = 0
+
+    for rev in revenues:
+        total_rev += rev.amount
+
+    jan_rev = Revenue.objects.filter(created_at__year=year, created_at__month=1)
+    jan_rev_amount = 0
+
+    for rev in jan_rev.all():
+        jan_rev_amount += rev.amount
+
+    feb_rev = Revenue.objects.filter(created_at__year=year, created_at__month=2)
+    feb_rev_amount = 0
+
+    for rev in feb_rev.all():
+        feb_rev_amount += rev.amount
+
+    mar_rev = Revenue.objects.filter(created_at__year=year, created_at__month=3)
+    mar_rev_amount = 0
+
+    for rev in mar_rev.all():
+        mar_rev_amount += rev.amount
+
+    apr_rev = Revenue.objects.filter(created_at__year=year, created_at__month=4)
+    apr_rev_amount = 0
+
+    for rev in apr_rev.all():
+        apr_rev_amount += rev.amount
+
+    may_rev = Revenue.objects.filter(created_at__year=year, created_at__month=5)
+    may_rev_amount = 0
+
+    for rev in may_rev.all():
+        may_rev_amount += rev.amount
+
+    jun_rev = Revenue.objects.filter(created_at__year=year, created_at__month=6)
+    jun_rev_amount = 0
+
+    for rev in jun_rev.all():
+        jun_rev_amount += rev.amount
+
+    jul_rev = Revenue.objects.filter(created_at__year=year, created_at__month=7)
+    jul_rev_amount = 0
+
+    for rev in jul_rev.all():
+        jul_rev_amount += rev.amount
+
+    aug_rev = Revenue.objects.filter(created_at__year=year, created_at__month=8)
+    aug_rev_amount = 0
+
+    for rev in aug_rev.all():
+        aug_rev_amount += rev.amount
+
+    sep_rev = Revenue.objects.filter(created_at__year=year, created_at__month=9)
+    sep_rev_amount = 0
+
+    for rev in sep_rev.all():
+        sep_rev_amount += rev.amount
+
+    oct_rev = Revenue.objects.filter(created_at__year=year, created_at__month=10)
+    oct_rev_amount = 0
+
+    for rev in oct_rev.all():
+        oct_rev_amount += rev.amount
+
+    nov_rev = Revenue.objects.filter(created_at__year=year, created_at__month=11)
+    nov_rev_amount = 0
+
+    for rev in nov_rev.all():
+        nov_rev_amount += rev.amount
+
+    dec_rev = Revenue.objects.filter(created_at__year=year, created_at__month=12)
+    dec_rev_amount = 0
+
+    for rev in dec_rev.all():
+        dec_rev_amount += rev.amount
+
+    revenue = {
+        'jan': jan_rev_amount,
+        'feb': feb_rev_amount,
+        'mar': mar_rev_amount,
+        'apr': apr_rev_amount,
+        'may': may_rev_amount,
+        'jun': jun_rev_amount,
+        'jul': jul_rev_amount,
+        'aug': aug_rev_amount,
+        'sep': sep_rev_amount,
+        'oct': oct_rev_amount,
+        'nov': nov_rev_amount,
+        'dec': dec_rev_amount,
+    }
+
+    jan_exp = Expenditure.objects.filter(created_at__year=year, created_at__month=1)
+    jan_exp_amount = 0
+
+    for exp in jan_exp.all():
+        jan_exp_amount += exp.total_cost
+
+    feb_exp = Expenditure.objects.filter(created_at__year=year, created_at__month=2)
+    feb_exp_amount = 0
+
+    for exp in feb_exp.all():
+        feb_exp_amount += exp.total_cost
+
+    mar_exp = Expenditure.objects.filter(created_at__year=year, created_at__month=3)
+    mar_exp_amount = 0
+
+    for exp in mar_exp.all():
+        mar_exp_amount += exp.total_cost
+
+    apr_exp = Expenditure.objects.filter(created_at__year=year, created_at__month=4)
+    apr_exp_amount = 0
+
+    for exp in apr_exp.all():
+        apr_exp_amount += exp.total_cost
+
+    may_exp = Expenditure.objects.filter(created_at__year=year, created_at__month=5)
+    may_exp_amount = 0
+
+    for exp in may_exp.all():
+        may_exp_amount += exp.total_cost
+
+    jun_exp = Expenditure.objects.filter(created_at__year=year, created_at__month=6)
+    jun_exp_amount = 0
+
+    for exp in jun_exp.all():
+        jun_exp_amount += exp.total_cost
+
+    jul_exp = Expenditure.objects.filter(created_at__year=year, created_at__month=7)
+    jul_exp_amount = 0
+
+    for exp in jul_exp.all():
+        jul_exp_amount += exp.total_cost
+
+    aug_exp = Expenditure.objects.filter(created_at__year=year, created_at__month=8)
+    aug_exp_amount = 0
+
+    for exp in aug_exp.all():
+        aug_exp_amount += exp.total_cost
+
+    sep_exp = Expenditure.objects.filter(created_at__year=year, created_at__month=9)
+    sep_exp_amount = 0
+
+    for exp in sep_exp.all():
+        sep_exp_amount += exp.total_cost
+
+    oct_exp = Expenditure.objects.filter(created_at__year=year, created_at__month=10)
+    oct_exp_amount = 0
+
+    for exp in oct_exp.all():
+        oct_exp_amount += exp.total_cost
+
+    nov_exp = Expenditure.objects.filter(created_at__year=year, created_at__month=11)
+    nov_exp_amount = 0
+
+    for exp in nov_exp.all():
+        nov_exp_amount += exp.total_cost
+
+    dec_exp = Expenditure.objects.filter(created_at__year=year, created_at__month=12)
+    dec_exp_amount = 0
+
+    for exp in dec_exp.all():
+        dec_exp_amount += exp.total_cost
+
+    expenditure = {
+        'jan': jan_exp_amount,
+        'feb': feb_exp_amount,
+        'mar': mar_exp_amount,
+        'apr': apr_exp_amount,
+        'may': may_exp_amount,
+        'jun': jun_exp_amount,
+        'jul': jul_exp_amount,
+        'aug': aug_exp_amount,
+        'sep': sep_exp_amount,
+        'oct': oct_exp_amount,
+        'nov': nov_exp_amount,
+        'dec': dec_exp_amount,
+    }
+
+    patients = {
+        'jan': Patient.objects.filter(created_at__year=year, created_at__month=1).count(),
+        'feb': Patient.objects.filter(created_at__year=year, created_at__month=2).count(),
+        'mar': Patient.objects.filter(created_at__year=year, created_at__month=3).count(),
+        'apr': Patient.objects.filter(created_at__year=year, created_at__month=4).count(),
+        'may': Patient.objects.filter(created_at__year=year, created_at__month=5).count(),
+        'jun': Patient.objects.filter(created_at__year=year, created_at__month=6).count(),
+        'jul': Patient.objects.filter(created_at__year=year, created_at__month=7).count(),
+        'aug': Patient.objects.filter(created_at__year=year, created_at__month=8).count(),
+        'sep': Patient.objects.filter(created_at__year=year, created_at__month=9).count(),
+        'oct': Patient.objects.filter(created_at__year=year, created_at__month=10).count(),
+        'nov': Patient.objects.filter(created_at__year=year, created_at__month=11).count(),
+        'dec': Patient.objects.filter(created_at__year=year, created_at__month=12).count(),
+    }
 
     context = {
         'wards':wards,
@@ -53,9 +243,15 @@ def dashboard(request):
         'inactive':inactive_staff,
         'revenue':total_rev,
         'years': years,
-        'current_year': current_year,
+        'current_year': year,
+        'rev_line':revenue,
+        'exp_line':expenditure,
+        'pat_line': patients,
+        'revs_for_year': revenues,
+        'exps_for_year': exps,
     }
     return render(request=request, template_name='management/dashboard.html',context=context)
+
 
 @login_required()
 def staff_list(request):
@@ -66,6 +262,7 @@ def staff_list(request):
     }
 
     return render(request=request, template_name='management/staff_list.html', context=context)
+
 
 class AddStaff(LoginRequiredMixin, CreateView):
     template_name = 'management/staff_new.html'
@@ -149,6 +346,7 @@ def ward_details(request, id):
             return HttpResponseRedirect(reverse_lazy('management:ward-details', kwargs={'id': ward.id}))
 
     return render(request=request, template_name='management/ward_details.html', context=context)
+
 
 class AddBill(LoginRequiredMixin, RedirectView):
     url = reverse_lazy('management:wards')
@@ -432,7 +630,7 @@ class LeavePeriodDetails(LoginRequiredMixin, DetailView):
 
         return context
 
-
+@login_required()
 def change_leave_status(request,status,leave_id, lp_id):
     leave = Leave.objects.get(id=leave_id)
 
@@ -442,7 +640,7 @@ def change_leave_status(request,status,leave_id, lp_id):
         else:
             leave.status = 'Rejected'
         leave.save()
-    return redirect(reverse_lazy('management:leave-details', kwargs = {'id':lp_id}))
+    return redirect(reverse_lazy('management:leave-details', kwargs={'id':lp_id}))
 
 
 # class RevenueList(LoginRequiredMixin, ListView):
@@ -450,7 +648,7 @@ def change_leave_status(request,status,leave_id, lp_id):
 #     queryset = Revenue.objects.all()
 #     template_name = 'management/revenue_list.html'
 
-
+@login_required()
 def revenues(request):
     revenue = Revenue.objects.all()
     form = RevenueForm

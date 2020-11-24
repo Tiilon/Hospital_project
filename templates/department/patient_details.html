@@ -12,8 +12,8 @@
 {% endblock %}
 {% block btn %}
     {% if object.patient_type == 'Ward' or object.patient_type == 'OPD' %}
-     <a href="{% url 'department:patient-discharge' object.id %}" class="btn btn-sm btn-danger">
-        <i></i>Discharged</a>
+        <a href="{% url 'department:patient-discharge' object.id %}" class="btn btn-sm btn-danger">
+            <i></i>Discharged</a>
     {% endif %}
 {% endblock %}
 {% block content %}
@@ -42,63 +42,126 @@
                     </div>
                 </div>
                 <div class="card">
-                    <div class="card-header" id="headingTwo">
+                    <div class="card-header " id="headingTwo">
                         Vital Signs
-                        <h2 class="mb-0 float-right">
-                            <button class="btn btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo"><i class="fa fa-sm fa-sort"></i></button>
+                        <h2 class="mb-0 float-right row">
+                            <a href="{% url 'department:patient-vital-signs' object.id %}" class="btn btn-block text-left col"><i class="fa fa-sm text-danger fa-chart-area"title="chart"></i></a>
+                            <button class="btn btn-block text-left collapsed col" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo"><i class="fa fa-sm fa-sort"></i></button>
                         </h2>
                     </div>
                     <div id="collapseTwo" class="collapse show" aria-labelledby="headingTwo" data-parent="#accordionExample">
-                        <div class="card-body">
-                            {% if object.weight %}
-                                <div class="list-group">
-                                    <div class="list-group-item">Weight: {{ object.weight }}</div>
-                                    <div class="list-group-item">Blood Pressure: {{ object.bp }}</div>
-                                    <div class="list-group-item">Respiration: {{ object.respiration }}</div>
-                                    <div class="list-group-item">Temperature: {{ object.temperature }}</div>
+                        <div class="accordion" id="nvsaccordionExample">
+                            <div class="card">
+                                <div class="card-header" id="nvs">
+                                    <h2 class="mb-0">
+                                        <button class="btn btn-block text-left" type="button" data-toggle="collapse" data-target="#nvscollapseOne" aria-expanded="true" aria-controls="nvscollapseOne">
+                                            Add New Vital Signs
+                                        </button>
+                                    </h2>
                                 </div>
-                            {% else %}
-                                <form method="post" action="{% url 'department:vital-signs' object.id %}">
-                                    {% csrf_token %}
-                                    <div class="row">
-                                        <div class="col-6">
-                                            <div class="form-group">
-                                                <label for="weight">Weight (kg)</label>
-                                                <input required type="number" name="weight" class="form-control" id="id_weight">
-                                            </div>
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="row">
-                                                <div class="col-6">
-                                                    <div class="form-group">
-                                                        <label for="weight">Systolic</label>
-                                                        <input required type="number" name="sys" class="form-control" id="id_sys">
+
+                                <div id="nvscollapseOne" class="collapse" aria-labelledby="nvsheadingOne" data-parent="#nvsaccordionExample">
+                                    <div class="card-body">
+                                        <div class="card-body">
+                                            {#                                            {% if object.vital_signs %}#}
+                                            {#                                                <div class="list-group">#}
+                                            {#                                                    <div class="list-group-item">Weight: {{ object.weight }}</div>#}
+                                            {#                                                    <div class="list-group-item">Blood Pressure: {{ object.bp }}</div>#}
+                                            {#                                                    <div class="list-group-item">Respiration: {{ object.respiration }}</div>#}
+                                            {#                                                    <div class="list-group-item">Temperature: {{ object.temperature }}</div>#}
+                                            {#                                                </div>#}
+                                            {#                                            {% else %}#}
+                                            <form method="post" action="{% url 'department:vital-signs' object.id %}">
+                                                {% csrf_token %}
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <div class="form-group">
+                                                            <label for="id_weight">Weight (kg)</label>
+                                                            <input step="0.01" required type="number" name="weight" class="form-control" id="id_weight">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <div class="row">
+                                                            <div class="col-6">
+                                                                <div class="form-group">
+                                                                    <label for="id_sys">Systolic</label>
+                                                                    <input required type="number" name="sys" class="form-control" id="id_sys">
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-6">
+                                                                <div class="form-group">
+                                                                    <label for="id_dias">Diastolic</label>
+                                                                    <input required type="number" name="dias" class="form-control" id="id_dias">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <div class="form-group">
+                                                            <label for="id_res">Respiration (CpM)</label>
+                                                            <input required type="number" name="respiration" id="id_res" class="form-control">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <div class="form-group">
+                                                            <label for="id_pulse">Pulse (BpM)</label>
+                                                            <input required type="number" name="respiration" id="id_pulse" class="form-control">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <div class="form-group">
+                                                            <label>Temperature (Cel)</label>
+                                                            <input required type="number" name="temperature" id="id_temp" class="form-control">
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                <div class="col-6">
-                                                    <div class="form-group">
-                                                        <label for="weight">Diastolic</label>
-                                                        <input required type="number" name="dias" class="form-control" id="id_dias">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="form-group">
-                                                <label for="id_res">Respiration (CpM)</label>
-                                                <input required type="number" name="respiration" id="id_res" class="form-control">
-                                            </div>
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="form-group">
-                                                <label>Temperature (Cel)</label>
-                                                <input required type="number" name="temperature" id="id_temp" class="form-control">
-                                            </div>
+                                                <button type="submit" class="btn btn-info">Submit</button>
+                                            </form>
+                                            {#                                            {% endif %}#}
                                         </div>
                                     </div>
-                                    <button type="submit" class="btn btn-info">Submit</button>
-                                </form>
-                            {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion" id="oldaccordionExample">
+                            <div class="card">
+                                <div class="card-header" id="nvs">
+                                    <h2 class="mb-0">
+                                        <button class="btn btn-block text-left" type="button" data-toggle="collapse" data-target="#oldcollapseOne" aria-expanded="true" aria-controls="oldcollapseOne">
+                                            Previous Vital Signs
+                                        </button>
+                                    </h2>
+                                </div>
+                                <div id="oldcollapseOne" class="collapse" aria-labelledby="oldheadingOne" data-parent="#oldaccordionExample">
+                                    <div class="card-body">
+                                        <ul class="list-group">
+                                            <li class="list-group-item">
+                                                <div class="accordion" id="listaccordionExample">
+                                                        {% for vs in object.vital_signs.all %}
+                                                        <div class="card">
+                                                            <div class="card-header" id="nvs">
+                                                                <h2 class="mb-0">
+                                                                    <button class="btn btn-block text-left" type="button" data-toggle="collapse" data-target="#listcollapseOne" aria-expanded="true" aria-controls="listcollapseOne">
+                                                                        {{ vs.created_at | date }} {{ vs.time }}
+                                                                    </button>
+                                                                </h2>
+                                                            </div>
+                                                            <div id="listcollapseOne" class="collapse" aria-labelledby="listheadingOne" data-parent="#listaccordionExample">
+                                                                <p>Created by : {{ vs.created_by.full_name }}</p>
+                                                                <p>Respiration: {{ vs.respiration }}</p>
+                                                                <p>Temperature:{{ vs.temperature }}</p>
+                                                                <p>Weight:{{ vs.weight }}</p>
+                                                                <p>Systolic:{{ vs.systolic }}</p>
+                                                                <p>Diastolic:{{ vs.diastolic }}</p>
+                                                            </div>
+                                                        </div>
+                                                    {% endfor %}
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -242,27 +305,27 @@
                                                                                                 <div class="list-group-item">Date treated: {{ treatment.date_treated }}</div>
                                                                                             </div>
                                                                                             {% if treatment.status == "Pending" %}
-                                                                                              <hr>
-                                                                                            <form action="{% url 'department:complete-treatment' treatment_id=treatment.id patient_id=object.id %}" method="post">
-                                                                                                {% csrf_token %}
-                                                                                                <div class="row">
-                                                                                                    <div class="col">
-                                                                                                        <div class="form-group">
-                                                                                                            <label for="id_time">Time completed</label>
-                                                                                                            <input required type="time" name="time_completed" id="id_time" class="form-control">
+                                                                                                <hr>
+                                                                                                <form action="{% url 'department:complete-treatment' treatment_id=treatment.id patient_id=object.id %}" method="post">
+                                                                                                    {% csrf_token %}
+                                                                                                    <div class="row">
+                                                                                                        <div class="col">
+                                                                                                            <div class="form-group">
+                                                                                                                <label for="id_time">Time completed</label>
+                                                                                                                <input required type="time" name="time_completed" id="id_time" class="form-control">
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                        <div class="col">
+                                                                                                            <div class="form-group">
+                                                                                                                <label for="id_time">Date completed</label>
+                                                                                                                <input  required type="date" name="date_completed" id="id_date" class="form-control">
+                                                                                                            </div>
                                                                                                         </div>
                                                                                                     </div>
-                                                                                                    <div class="col">
-                                                                                                        <div class="form-group">
-                                                                                                            <label for="id_time">Date completed</label>
-                                                                                                            <input  required type="date" name="date_completed" id="id_date" class="form-control">
-                                                                                                        </div>
-                                                                                                    </div>
-                                                                                                </div>
-                                                                                                <button type="submit" class="btn btn-block btn-success">Complete</button>
-                                                                                            </form>
-                                                                                            <hr>
-                                                                                            <a href="{% url 'department:cancel-treatment' treatment_id=treatment.id patient_id=object.id %}" class="btn btn-block btn-danger">Cancel</a>
+                                                                                                    <button type="submit" class="btn btn-block btn-success">Complete</button>
+                                                                                                </form>
+                                                                                                <hr>
+                                                                                                <a href="{% url 'department:cancel-treatment' treatment_id=treatment.id patient_id=object.id %}" class="btn btn-block btn-danger">Cancel</a>
                                                                                             {% endif %}
 
                                                                                         </div>
