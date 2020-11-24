@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 import os
 from pathlib import Path
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -49,6 +50,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -84,14 +86,15 @@ WSGI_APPLICATION = 'AI_Hospital.wsgi.application'
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'hospital_db',
-        'HOST': 'localhost',
-        'USER': 'postgres',
-        'PORT': '5432',
-        'PASSWORD': 'sparrow0500',
-    }
+    'default': dj_database_url.config(default=dj_database_url.config('DATABASE_URL'))
+    # 'default': {
+        # 'ENGINE': 'django.db.backends.postgresql',
+        # 'NAME': 'hospital_db',
+        # 'HOST': 'localhost',
+        # 'USER': 'postgres',
+        # 'PORT': '5432',
+        # 'PASSWORD': 'sparrow0500',
+    # }
 }
 
 
@@ -137,3 +140,11 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'), ]
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'apps'
 LOGOUT_REDIRECT_URL = 'login'
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+try:
+    from AI_Hospital.local_settings import *
+except ImportError:
+    pass
